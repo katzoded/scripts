@@ -1,0 +1,6 @@
+#!/bin/tcsh
+cd
+\rm work
+ln -s Lidap_Change work
+
+/home/okatz/scripts/build/get_work

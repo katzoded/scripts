@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+
+for file in `find . -name "*obj_x86*"`; do
+    cd $file
+    ccpbuild -clean
+    cd -
+done
+
+
+
+
+

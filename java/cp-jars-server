@@ -1,0 +1,7 @@
+#!/bin/tcsh
+cd /opt/IPVRjgui/jgui
+setenv MODULE_TO_COPY rtr
+cp /home/mayank/work_rtr_snowy/vobs/ems/sce/java/class/$MODULE_TO_COPY-common.jar /opt/IPVRjgui/jgui/client
+cp /home/mayank/work_rtr_snowy/vobs/ems/sce/java/class/$MODULE_TO_COPY-client.jar /opt/IPVRjgui/jgui/client
+cp /home/mayank/work_rtr_snowy/vobs/ems/sce/java/class/$MODULE_TO_COPY-common.jar /opt/IPVRjgui/jgui/WEB-INF/lib
+cp /home/mayank/work_rtr_snowy/vobs/ems/sce/java/class/$MODULE_TO_COPY-server.jar /opt/IPVRjgui/jgui/WEB-INF/lib

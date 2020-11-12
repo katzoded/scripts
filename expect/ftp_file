@@ -1,0 +1,33 @@
+#!/usr/local/bin/expect -f
+if {$argc < 7} {
+    puts "usage: ftp_file <hostname> <curr_user> <remote_user> <remote_user_password> <remote_dir> <local_dir> <local_file>"
+    exit;
+}
+
+set host [lindex $argv 0] 
+set curr_user [lindex $argv 1] 
+set remote_user [lindex $argv 2] 
+set remote_user_password [lindex $argv 3] 
+set remote_dir [lindex $argv 4] 
+set local_dir [lindex $argv 5] 
+set local_file [lindex $argv 6] 
+set timeout 1000
+
+spawn ftp $host 
+expect "Name ($host:$curr_user): "
+send "$remote_user\n"
+expect "Password:"
+send "$remote_user_password\n"
+expect "ftp> "
+send "lcd $local_dir\n"
+expect "ftp> "
+send "cd $remote_dir\n"
+expect "ftp> "
+send "prompt off\n"
+expect "ftp> "
+#send "hash\n"
+#expect "ftp> "
+send "binary\n"
+expect "ftp> "
+send "mput $local_file\n"
+expect "ftp> "

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [ "$#" -ne 3 ]; then
+    echo "usage: <build> <package_names> <release>"
+    exit
+fi
+
+pkgs=(${2//,/ })
+#@pkgs = split(/*/, $3);
+
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "Build: $1"
+
+cd /project/release/$3/x86/$1/PKGS
+
+/home/mayank/scripts/concise_output "Removing select packages from $1"
+
+for i in "${pkgs[@]}"
+do
+	\rm -fr $i
+    /home/mayank/scripts/concise_output "Removed package $i from $1"
+done
+
+/home/mayank/scripts/concise_output "Copying new packages to $1"
+
+for i in "${pkgs[@]}"
+do
+    
+	cp -fr /export/home/buildadmin2/$3/$1/PKGS/$i /project/release/$3/x86/$1/PKGS
+    /home/mayank/scripts/concise_output "Copied package $i from $1"
+done
+
+/home/mayank/scripts/concise_output "Build $1 created successfully"
+/home/mayank/scripts/end_script 

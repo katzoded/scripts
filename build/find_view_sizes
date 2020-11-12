@@ -1,0 +1,21 @@
+#!/bin/bash
+
+cd ~/
+shopt -s nullglob
+my_views=(work_*)
+
+/home/mayank/scripts/formatted_output "View sizes" 
+
+for view_name in "${my_views[@]}"
+do
+   :
+    cd ~/
+    cd $view_name
+    view_size=$(du -kh . | tail -1)
+    stringarray=($view_size)    
+    printf "%20s : %10s\n" $view_name ${stringarray[0]}
+
+done
+
+echo ""
+

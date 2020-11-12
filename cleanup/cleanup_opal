@@ -1,0 +1,10 @@
+#!/bin/bash
+
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "Removing trace data"
+rm -fr /u01/app/oracle/diag/rdbms/emsopldb/emsopldb/trace/*
+rm -fr /u01/app/oracle/diag/rdbms/emsopldb_1/emsopldb/trace/*
+/home/mayank/scripts/concise_output "Removing incident data"
+rm -fr /u01/app/oracle/diag/rdbms/emsopldb/emsopldb/incident/*
+rm -fr /u01/app/oracle/diag/rdbms/emsopldb_1/emsopldb/incident/*
+/home/mayank/scripts/end_script

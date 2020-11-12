@@ -1,0 +1,10 @@
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "killing sm_agent"
+pkill -9 sm_agent
+/home/mayank/scripts/concise_output "killing sm_auto"
+pkill -9 sm_auto
+cd
+cd sm_agents
+/home/mayank/scripts/concise_output "Starting sm_agent"
+./start_sm_agent.sh > /dev/null
+/home/mayank/scripts/end_script

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+total=`grep -i -s "Needs Merge" * | grep -v "lost+found" | grep "vikings" | wc -l`
+echo "$total : Vikings"
+total=`grep -i -s "Needs Merge" * | grep -v "lost+found" | grep "common" | wc -l`
+echo "$total : Common"
+total=`grep -i -s "Needs Merge" * | grep -v "lost+found" | grep "thirdparty" | wc -l`
+echo "$total : Thirdparty"
+total=`grep -i -s "Needs Merge" * | grep -v "lost+found" | grep "ems" | wc -l`
+echo "$total : EMS"

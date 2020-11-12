@@ -1,0 +1,34 @@
+#!/usr/local/bin/expect -f
+if {$argc < 2} {
+    puts "usage: upg_5_10 <hostname> <version>"
+    exit;
+}
+
+set host [lindex $argv 0] 
+set version [lindex $argv 1] 
+set timeout 1000
+set version_path_pkgs "/project/release/5.10/x86/"
+set version_path_install "/project/release/5.10/x86/"
+append version_path_pkgs $version
+append version_path_install $version
+append version_path_pkgs "/PKGS"
+append version_path_install "/Install/install"
+
+spawn telnet $host 
+expect "login:"
+send "root\r\n"
+expect "Password:"
+send "ccs,sce\r\n"
+expect "$host>"
+send "$version_path_install\r\n"
+expect "Enter your choice "
+send "1\r\n"
+expect "Enter your choice "
+send "1\r\n"
+expect "Enter version for Upgrade"
+send "$version\r\n"
+expect "Enter path to PKGS directory for version"
+send "$version_path_pkgs\r\n"
+expect "Enter your choice "
+send "12\r\n"
+set timeout 1000

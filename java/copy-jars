@@ -1,0 +1,12 @@
+#!/bin/tcsh
+cd /opt/IPVRjgui/jgui
+setenv MODULE_TO_COPY $1
+setenv DIR_VIEW $2
+cp /home/mayank/$DIR_VIEW/vobs/ems/sce/java/class/$MODULE_TO_COPY-common.jar /opt/IPVRjgui/jgui/client
+cp /home/mayank/$DIR_VIEW/vobs/ems/sce/java/class/$MODULE_TO_COPY-client.jar /opt/IPVRjgui/jgui/client
+cp /home/mayank/$DIR_VIEW/vobs/ems/sce/java/class/$MODULE_TO_COPY-common.jar /opt/IPVRjgui/jgui/WEB-INF/lib
+cp /home/mayank/$DIR_VIEW/vobs/ems/sce/java/class/$MODULE_TO_COPY-server.jar /opt/IPVRjgui/jgui/WEB-INF/lib
+cd /opt/IPVRjgui/jgui
+jar -cvf ../jgui.war .
+/opt/glassfishv3/glassfish/bin/asadmin undeploy jgui
+/opt/glassfishv3/glassfish/bin/asadmin deploy ../jgui.war

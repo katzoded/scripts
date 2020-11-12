@@ -1,0 +1,5 @@
+#!/bin/tcsh
+cd /opt/IPVRjgui/jgui
+jar -cvf ../jgui.war .
+/opt/glassfishv3/glassfish/bin/asadmin undeploy jgui
+/opt/glassfishv3/glassfish/bin/asadmin deploy ../jgui.war

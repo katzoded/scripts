@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: <from_build> <to_build>"
+    exit
+fi
+
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "From build: $1"
+/home/mayank/scripts/concise_output "To build: $2"
+
+cd /project/release/5.9/sparc
+
+/home/mayank/scripts/concise_output "Removing any old build of $2"
+\rm -fr $2
+
+/home/mayank/scripts/concise_output "Copying from $1 to $2"
+cp -fr $1 $2
+
+cd /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Removing packages from $2"
+
+\rm -fr doc/              IPVRdca/          IPVRibcf/         IPVRnea/          IPVRss7gui/
+\rm -fr IPVR3rdparty/     IPVRddas/         IPVRibcfgui/      IPVRpsmon/        IPVRsse/
+\rm -fr IPVRaudit/        IPVRdiagmgr/      IPVRice/          IPVRptoolgui/     IPVRthct/
+\rm -fr IPVRbgce/         IPVRdse/          IPVRinapgui/      IPVRqosgui/       IPVRtool/
+\rm -fr IPVRbggui/        IPVRdsegui/       IPVRinst/         IPVRrde/          IPVRtrgui/
+\rm -fr IPVRbulkloading/  IPVRec/           IPVRligui/        IPVRregui/        IPVRvrpt/
+\rm -fr IPVRccp/          IPVRems/          IPVRlsg/          IPVRreport/       IPVRvrzlog/
+\rm -fr IPVRcdr/          IPVRers/          IPVRm3uagui/      IPVRsee/          omni/
+\rm -fr IPVRcdrgui/       IPVRform/         IPVRmed/          IPVRsmgr/         oracle/
+\rm -fr IPVRdas/          IPVRha/           IPVRmisc/         IPVRsngui/
+\rm -fr IPVRdbutl/        IPVRhtml/         IPVRmrce/         IPVRspice/
+ 
+
+/home/mayank/scripts/concise_output "Copying packages to $2"
+
+cp -fr /export/build/scm_admin/5.9/$2/PKGS/* /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Build $2 created successfully"
+/home/mayank/scripts/end_script 

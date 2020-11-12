@@ -1,0 +1,6 @@
+#!/bin/bash
+viewusername=$1
+viewver=$2
+viewhost=$3
+
+echo ct mkview -tag $viewusername_$viewver -snapshot -host $viewhost  -hpath ~/$viewusername_$viewver -gpath ~/$viewusername_$viewver ~/$viewusername_$viewver

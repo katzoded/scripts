@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 view-dir" >&2
+    exit 1
+fi
+
+/home/mayank/scripts/formatted_output "View size before cleanup"
+
+cd ~/
+cd $1
+view_size=$(du -kh . | tail -1)
+stringarray=($view_size)    
+printf "%20s : %10s\n" $view_name ${stringarray[0]}
+
+/home/mayank/scripts/formatted_output "Cleaning up $1 - common"
+
+cd ~/
+cd $1/vobs/common
+buildcleaner > /dev/null
+/home/mayank/scripts/remove_large_binary_files > /dev/null
+
+/home/mayank/scripts/formatted_output "Cleaning up $1 - vikings"
+
+cd ~/
+cd $1/vobs/vikings
+buildcleaner > /dev/null
+/home/mayank/scripts/remove_large_binary_files > /dev/null
+
+/home/mayank/scripts/formatted_output "View size after cleanup"
+
+cd ~/
+cd $1
+view_size=$(du -kh . | tail -1)
+stringarray=($view_size)    
+printf "%20s : %10s\n" $view_name ${stringarray[0]}
+
+
+/home/mayank/scripts/formatted_output "Completed"
+
+
+
+
+

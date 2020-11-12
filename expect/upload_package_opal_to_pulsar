@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: <package_name> <build>"
+    exit
+fi
+
+/home/mayank/scripts/clear_screen
+
+package_name=$1
+package_name_tar=$1."tar"
+build_number=$2
+
+/home/mayank/scripts/formatted_output "Removing any existing files"
+
+cd /build/buildadmin2/5.8.2/$2/PKGS
+\rm -fr /tmp/$package_name_tar
+
+/home/mayank/scripts/formatted_output "Building tar file $package_name_tar"
+tar -cvf /tmp/$package_name_tar $package_name 
+#mv $package_name_tar /tmp/
+
+/home/mayank/scripts/formatted_output "Uploading $package_name_tar to pulsar"
+
+expect /home/mayank/scripts/expect/ftp_file pulsar buildadmin2 scm_admin sparc10v /tmp/ /tmp/ $package_name_tar
+
+expect /home/mayank/scripts/expect/unpackage_file pulsar $package_name $build_number
+
+/home/mayank/scripts/formatted_output "Completed"
+
+#/home/mayank/scripts/ftp_file 198.87.49.70 buildadmin2 release L0k1tnow! $1 $2 . $file_name_tar_gz
+
+

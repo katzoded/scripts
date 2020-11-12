@@ -1,0 +1,5 @@
+#!/bin/tcsh
+
+expect /home/mayank/scripts/expect/upg_5_10 opal $1
+expect /home/mayank/scripts/expect/upg_5_10 sixcsp1 $1
+expect /home/mayank/scripts/expect/upg_5_10 sixcsp2 $1

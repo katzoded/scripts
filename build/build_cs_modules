@@ -1,0 +1,8 @@
+mybuild commonbuild
+mybuild ccsbuild
+mybuild lsgbuild
+mybuild ssebuild
+mybuild servicesbuild
+mybuild rebuild
+mybuild dcsbuild
+mybuild scebuild

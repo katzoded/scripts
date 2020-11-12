@@ -1,0 +1,8 @@
+#!/bin/tcsh
+cd
+\rm work
+ln -s work_592_sparc_ems work
+cp .cshrc_592_sparc_ems .cshrc
+source .cshrc
+
+/home/mayank/scripts/build/get_work

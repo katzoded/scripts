@@ -1,0 +1,2 @@
+#!/bin/tcsh
+su - glssfsh -c "\rm -fr /opt/glassfishv3/glassfish/domains/domain1/osgi-cache/felix"

@@ -1,0 +1,6 @@
+#!/bin/tcsh
+cd /opt/IPVRauditnewgui/lib
+cp /home/mayank/work_5_8_2/vobs/ems/sce/java/class/auditNew-* /opt/IPVRauditnewgui/lib
+cp /home/mayank/work_5_8_2/vobs/ems/sce/java/class/common-* /opt/IPVRauditnewgui/lib
+/etc/init.d/webora stop web
+/etc/init.d/webora start web

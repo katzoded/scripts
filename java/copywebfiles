@@ -1,0 +1,5 @@
+#!/bin/tcsh
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/WebContent/css /opt/glassfishv3/glassfish/domains/domain1/applications/jgui
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/WebContent/js /opt/glassfishv3/glassfish/domains/domain1/applications/jgui
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/WebContent/images /opt/glassfishv3/glassfish/domains/domain1/applications/jgui
+cp /home/mayank/work_59_snowy/vobs/ems/sce/java/WebContent/RealTime.htm /opt/glassfishv3/glassfish/domains/domain1/applications/jgui/

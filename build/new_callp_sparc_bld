@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: <from_build> <to_build>"
+    exit
+fi
+
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "From build: $1"
+/home/mayank/scripts/concise_output "To build: $2"
+
+cd /project/release/5.9/sparc
+
+/home/mayank/scripts/concise_output "Removing any old build of $2"
+\rm -fr $2
+
+/home/mayank/scripts/concise_output "Copying from $1 to $2"
+cp -fr $1 $2
+
+cd /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Removing new packages from $2"
+
+\rm -fr doc  IPVRdca       IPVRibcf      IPVRmrce      IPVRsse
+\rm -fr IPVR3rdparty   IPVRdiagmgr    IPVRice        IPVRnea        IPVRtool 
+\rm -fr IPVRbgce       IPVRdse        IPVRinst       IPVRrde        IPVRvrpt 
+\rm -fr IPVRccp        IPVRec         IPVRlsg        IPVRsee        omni 
+\rm -fr IPVRcdr        IPVRers        IPVRmisc       IPVRspice      
+
+/home/mayank/scripts/concise_output "Copying new packages to $2"
+
+cp -fr /export/build/scm_admin/5.9/$2/PKGS/* /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Build $2 copied successfully"
+/home/mayank/scripts/end_script 

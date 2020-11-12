@@ -1,0 +1,27 @@
+unlink ama
+unlink automation
+unlink ccl
+unlink cdl
+unlink cdt
+unlink cmi
+unlink cta
+unlink dca
+unlink debug
+unlink frameworks
+unlink odmon
+unlink optools
+unlink scripts
+unlink subscriber
+unlink tools
+unlink tra
+unlink unixutils
+unlink uta
+unlink utils
+unlink thirdparty
+unlink database
+unlink ems
+unlink sce
+unlink fms
+unlink xercesc
+unlink pt
+

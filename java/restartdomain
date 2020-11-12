@@ -1,0 +1,3 @@
+#!/bin/tcsh
+su - glssfsh -c "/opt/glassfishv3/glassfish/bin/asadmin stop-domain"
+su - glssfsh -c "/opt/glassfishv3/glassfish/bin/asadmin start-domain"

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: <release> <build>"
+    exit
+fi
+
+/home/mayank/scripts/formatted_output "Email body"
+
+echo ""
+echo "Subject: Build $2 is ready"
+echo ""
+echo ""
+echo "Build path(s):"
+#echo "----------------"
+echo ""
+echo " - /project/release/$1/x86/$2"
+
+if [ "$1" == "5.9" ]; then
+    echo " - /project/release/$1/sparc/$2"
+fi
+
+echo ""
+echo "Defect(s):"
+#echo "------------"
+echo ""

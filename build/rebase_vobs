@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: <build-rls-dir> <label>"
+    exit
+fi
+
+build_dir=$1
+label=$2
+
+/home/mayank/scripts/formatted_output "Starting to rebase with $label"
+
+
+
+cd 
+cd views/$build_dir/vobs
+
+/home/mayank/scripts/formatted_output "Rebasing common"
+cleartool mklabel -replace -recurse $label common
+/home/mayank/scripts/formatted_output "Rebasing vikings"
+cleartool mklabel -replace -recurse $label vikings
+/home/mayank/scripts/formatted_output "Rebasing ems"
+cleartool mklabel -replace -recurse $label ems
+/home/mayank/scripts/formatted_output "Rebasing thirdparty"
+cleartool mklabel -replace -recurse $label thirdparty
+
+
+/home/mayank/scripts/formatted_output "Done rebasing with $label"
+

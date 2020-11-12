@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ "$#" -ne 3 ]; then
+    echo "usage: <from_build> <to_build> <package_names>"
+    exit
+fi
+
+pkgs=(${3//,/ })
+#@pkgs = split(/;/, $3);
+
+/home/mayank/scripts/start_script
+/home/mayank/scripts/concise_output "From build: $1"
+/home/mayank/scripts/concise_output "To build: $2"
+
+cd /project/release/5.9/sparc
+/home/mayank/scripts/concise_output "Removing any old build of $2"
+\rm -fr $2
+
+/home/mayank/scripts/concise_output "Copying from $1 to $2"
+cp -fr $1 $2
+
+cd /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Removing select packages from $2"
+
+for i in "${pkgs[@]}"
+do
+	\rm -fr $i
+    /home/mayank/scripts/concise_output "Removed package $i from $2"
+done
+
+/home/mayank/scripts/concise_output "Copying new packages to $2"
+
+for i in "${pkgs[@]}"
+do
+    
+	cp -fr /export/build/scm_admin/5.9/$2/PKGS/$i /project/release/5.9/sparc/$2/PKGS
+    /home/mayank/scripts/concise_output "Copied package $i from $2"
+done
+
+#cp -fr /export/build/scm_admin/5.9/$2/PKGS/* /project/release/5.9/sparc/$2/PKGS
+
+/home/mayank/scripts/concise_output "Build $2 created successfully"
+/home/mayank/scripts/end_script 

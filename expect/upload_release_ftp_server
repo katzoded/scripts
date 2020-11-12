@@ -1,0 +1,59 @@
+#!/bin/bash
+
+#example paths:
+
+# /export/release/Code/CS/5.8.2/x86
+# /export/release/Code/CS/5.9/x86
+# /export/release/Code/CS/5.9/sparc
+# /export/release/Code/CS/5.10/x86
+
+if [ "$#" -ne 3 ]; then
+    echo "usage: <build> <remote_dir> <arch>"
+    exit
+fi
+
+arch=$3
+
+/home/mayank/scripts/clear_screen
+
+file_name_tar=$1."tar"
+file_name_tar_gz=$1."tar.gz"
+
+/home/mayank/scripts/formatted_output "Removing any existing files"
+
+\rm -fr $file_name_tar
+\rm -fr $file_name_tar_gz
+
+/home/mayank/scripts/formatted_output "Building tar file $file_name_tar"
+#echo "/bin/tar cf $file_name_tar $1"
+/bin/tar cf $file_name_tar $1
+/home/mayank/scripts/formatted_output "Building tar.gz file $file_name_tar_gz"
+#echo "/export/home/buildadmin2/work/unixutils/bin_x86/gzip $file_name_tar"
+
+if [ "$arch" == "x86" ]; then
+    /export/home/buildadmin2/work/unixutils/bin_x86/gzip $file_name_tar
+else
+    /export/home/scm_admin/work/unixutils/bin/gzip $file_name_tar
+fi
+
+/home/mayank/scripts/formatted_output "Uploading $file_name_tar_gz to $2"
+
+if [ "$arch" == "x86" ]; then
+    expect /home/mayank/scripts/expect/ftp_file 198.87.49.70 buildadmin2 release L0k1tnow! $2 . $file_name_tar_gz
+else
+    expect /home/mayank/scripts/expect/ftp_file 198.87.49.70 scm_admin release L0k1tnow! $2 . $file_name_tar_gz
+fi
+
+#echo "/home/mayank/scripts/ftp_file 198.87.49.70 buildadmin2 release L0k1tnow! $2 . $file_name_tar_gz"
+
+/home/mayank/scripts/formatted_output "Summary"
+echo "Build:      $1"
+echo "Build file: $file_name_tar_gz"
+echo "Build path: $2"
+
+
+/home/mayank/scripts/formatted_output "Completed"
+
+#/home/mayank/scripts/ftp_file 198.87.49.70 buildadmin2 release L0k1tnow! $1 $2 . $file_name_tar_gz
+
+

@@ -1,0 +1,8 @@
+/home/mayank/scripts/formatted_output "killing sm_agent"
+pkill -9 sm_agent
+/home/mayank/scripts/formatted_output "killing sm_auto"
+pkill -9 sm_auto
+cd
+cd softmeld
+/home/mayank/scripts/formatted_output "Starting sm_agent"
+./start_sm_agent.sh

@@ -1,0 +1,18 @@
+#!/usr/local/bin/expect -f
+
+set host "opal"
+set timeout 30
+#system "make clean; make"
+set CURRENT [exec pwd]
+set module [exec basename $CURRENT]
+
+spawn telnet $host 
+expect "login:"
+send "root\r\n"
+expect "Password:"
+send "ccs,sce\r\n"
+expect "$host>"
+send "ls\r\n"
+expect "$host>"
+send "/home/mayank/scripts/copy-jars $module\r\n"
+expect "$host>"

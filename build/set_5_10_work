@@ -1,0 +1,8 @@
+#!/bin/tcsh
+cd
+\rm work
+ln -s work_5.10 work
+cp .cshrc_5.10 .cshrc
+source .cshrc
+
+/home/rhalabi/scripts/build/get_work

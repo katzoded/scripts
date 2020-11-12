@@ -1,0 +1,72 @@
+#!/usr/local/bin/expect -f
+
+if {$argc < 2} {
+    puts "usage: expapex.exp <target-machine> <application-id>"
+    exit;
+}
+
+set timeout 1000
+set remotehost [lindex $argv 0] 
+set apexhost solx86
+set applicationid [lindex $argv 1] 
+set applicationfilename "f"
+append applicationfilename $applicationid
+append applicationfilename ".sql"
+
+puts ""
+puts "***************************************************"
+puts "Logging to $apexhost"
+puts "***************************************************"
+spawn rsh $apexhost
+expect "$apexhost"
+send "su - oracle\r\n"
+expect "Password:"
+send "oracleveraz\r\n"
+expect "$apexhost {oracle} %"
+send "java -cp .:/u01/app/oracle/product/11.2.0/jdbc/lib/ojdbc5.jar:/export/home/oracle/apex_401/utilities oracle.apex.APEXExport -db localhost:1521:solx86db -user ipverse -password ipverse -applicationid $applicationid\r\n"
+expect "$apexhost {oracle} %"
+sleep 15
+
+puts ""
+puts "***************************************************"
+puts "Apex application is exported"
+puts "***************************************************"
+expect "$apexhost {oracle} %"
+puts ""
+puts "***************************************************"
+puts "Generated file: $applicationfilename"
+puts "***************************************************"
+send "exit\r"
+
+spawn rsh $apexhost
+expect "$apexhost"
+send "\\rm -f /home/mayank/$applicationfilename\r\n"
+sleep 1
+expect "$apexhost"
+send "\\cp -f /export/home/oracle/$applicationfilename /home/mayank/$applicationfilename\r\n"
+expect "$apexhost"
+puts "Copied file $applicationfilename to home directory"
+sleep 2
+send "exit\r"
+
+puts ""
+puts "***************************************************"
+puts "Logging to $remotehost"
+puts "***************************************************"
+
+spawn rsh $remotehost
+expect "$remotehost"
+send "su - oracle\r\n"
+expect "Password:"
+send "oracleveraz\r\n"
+expect "$remotehost {oracle} %"
+send "/home/mayank/scripts/expect/install_ems_apxapp.sh $applicationfilename\r\n"
+expect "$remotehost {oracle} %"
+send "cat /tmp/apx_compile.out"
+expect "$remotehost {oracle} %"
+#sleep 20
+puts ""
+puts "***************************************************"
+puts "Completed import of application $applicationfilename"
+puts "***************************************************"
+

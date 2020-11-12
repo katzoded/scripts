@@ -1,0 +1,9 @@
+#!/bin/sh
+
+/home/mayank/scripts/clear_screen
+
+/home/mayank/scripts/formatted_output "Starting build $1"
+
+$1 > /dev/null
+
+/home/mayank/scripts/formatted_output "Completed build $1"

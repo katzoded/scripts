@@ -1,0 +1,8 @@
+#!/bin/tcsh
+cd
+\rm work
+ln -s work_592 work
+cp .cshrc_592 .cshrc
+source .cshrc
+
+/home/mayank/scripts/build/get_work

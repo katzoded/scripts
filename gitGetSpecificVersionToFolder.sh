@@ -1,0 +1,1 @@
+~/dev-newton/scripts/ReplaceFileList.sh "\(.*\)" "mkdir -p $\(dirname $1/$2/\1\); \n git show $2:\1 \>$1/$2/\1"

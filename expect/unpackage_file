@@ -1,0 +1,67 @@
+#!/usr/local/bin/expect -f
+
+if {$argc < 3} {
+    puts "usage: unpackage_file.exp <target_machine> <package_name> <build_name>"
+    exit;
+}
+
+set timeout 1000
+set remotehost [lindex $argv 0] 
+set package_name [lindex $argv 1] 
+set build_name [lindex $argv 2]
+set package_name_tar $package_name
+append package_name_tar ".tar"
+
+puts ""
+puts "***************************************************"
+puts "Logging to $remotehost"
+puts "***************************************************"
+
+spawn rsh $remotehost -l scm_admin
+#expect "$remotehost"
+#send "su - scm_admin\r\n"
+#expect "Password:"
+#send "sparc10v\r"
+expect "$remotehost"
+
+#spawn telnet $remotehost 
+#expect "login: "
+#send "scm_admin\r"
+#expect "Password: "
+#send "sparc10v\r"
+#expect "$remotehost [/export/home/scm_admin] >"
+send "cd /tmp/\r\n"
+expect "$remotehost"
+send "mv $package_name_tar /project/release/5.8/x86/$build_name/PKGS\r\n"
+expect "$remotehost"
+send "cd /project/release/5.8/x86/$build_name/PKGS\r\n"
+expect "$remotehost"
+send "rm -fr $package_name\r\n"
+expect "$remotehost"
+send "tar -xvf $package_name_tar\r\n"
+expect "$remotehost"
+send "rm -fr $package_name_tar\r\n"
+expect "$remotehost"
+send "cd $package_name\r\n"
+expect "$remotehost"
+send "ls -ltr\r\n"
+expect "$remotehost"
+send "cd ~/\r\n"
+expect "$remotehost"
+
+#spawn rsh $remotehost
+#expect "$remotehost"
+#send "su - oracle\r\n"
+#expect "Password:"
+#send "oracleveraz\r\n"
+#expect "$remotehost {oracle} %"
+#send "/home/mayank/scripts/install_ems_apxapp.sh $applicationfilename\r\n"
+#expect "$remotehost {oracle} %"
+#send "cat /tmp/apx_compile.out"
+#expect "$remotehost {oracle} %"
+#sleep 20
+puts ""
+puts "***************************************************"
+#puts "Completed import of application $applicationfilename"
+puts "***************************************************"
+

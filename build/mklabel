@@ -1,0 +1,3 @@
+/home/mayank/scripts/formatted_output "Starting to apply label $1"
+cleartool mklabel -replace -recurse $1 .
+/home/mayank/scripts/formatted_output "Done applying label $1"

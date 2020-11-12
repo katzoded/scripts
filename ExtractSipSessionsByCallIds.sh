@@ -1,0 +1,1 @@
+'/cygdrive/c/Program Files (x86)/Wireshark/tshark.exe'  -T fields -e sip.Call-ID -r${1} | sort | uniq | ~/dev-newton/scripts/ReplaceFileList.sh "\(.*\)\\r" "'/cygdrive/c/Program Files (x86)/Wireshark/tshark.exe' -Y \"(sip.Call-ID == \"\1\")\" -r ${1} -w ${1}-\1.cap"

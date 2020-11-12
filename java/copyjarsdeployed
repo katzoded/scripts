@@ -1,0 +1,6 @@
+#!/bin/tcsh
+setenv MODULE_TO_COPY tgLI
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/class/tgLI-common.jar /opt/glassfishv3/glassfish/domains/domain1/applications/jgui/WEB-INF/lib
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/class/tgLI-common.jar /opt/glassfishv3/glassfish/domains/domain1/applications/jgui/client/
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/class/tgLI-server.jar /opt/glassfishv3/glassfish/domains/domain1/applications/jgui/WEB-INF/lib
+cp -fr /home/mayank/work_59_snowy/vobs/ems/sce/java/class/tgLI-client.jar /opt/glassfishv3/glassfish/domains/domain1/applications/jgui/client/
