@@ -1,8 +1,9 @@
 
+
 export DATE_FORMAT="[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]*:[0-9]*"
 export FILENAME=${1}
 export FOLDERNAME=$(dirname ${FILENAME})
-export EXTRA_FILTER=${2}
+export EXTRA_FILTER="${2}"
 export FILTER=".*SIP_Utils\.cc\.75|.*########## SIPMessage ##########"
 
 #cat ${FILENAME} | ~/dev-newton/scripts/grep.multiline.pl "\[${DATE_FORMAT}]" "SIPCallLeg::AddRouteHeadersFromRecordRoute out_msg  ########## SIPMessage ##########|REceived message is  ########## SIPMessage ##########|B2BCallLeg::MsgToSendEvent.*########## SIPMessage ##########" > ${FOLDERNAME}/Messages.log;
@@ -42,14 +43,25 @@ if [ "${EXTRA_FILTER}" != "" ]; then
     > ${FOLDERNAME}/Messages.log.all.note;
 fi
 
-export MSGLIST1=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_MESSAGE\\" \\"note over \1#lightgreen:\\"');
-export MSGLIST2=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_RECEIVED\\" \\"note over \1#yellow:\\"');
-export MSGLIST3=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_SENT\\" \\"note over \1#pink:\\"');
+cat ${FOLDERNAME}/Messages.log.all.note > ${FOLDERNAME}/Messages.log.all.updated;
 
-echo "${MSGLIST1} ${MSGLIST2} ${MSGLIST3}" | xargs echo "cat ${FOLDERNAME}/Messages.log.all.note" | sh  | fold -w 140 > ${FOLDERNAME}/Messages.log.all.updated
+grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" 'cat ${FOLDERNAME}/Messages.log.all.updated | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\\[${DATE_FORMAT}\\]" "Call-ID:\1" "NOTE_OVER_MESSAGE" "note over\1#lightgreen:" \> ${FOLDERNAME}/Messages.log.all.updated.tmp; mv ${FOLDERNAME}/Messages.log.all.updated.tmp ${FOLDERNAME}/Messages.log.all.updated' |sh
+
+grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" 'cat ${FOLDERNAME}/Messages.log.all.updated | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\\[${DATE_FORMAT}\\]" "Call-ID:\1" "NOTE_OVER_RECEIVED" "note over\1#yellow:" \> ${FOLDERNAME}/Messages.log.all.updated.tmp; mv ${FOLDERNAME}/Messages.log.all.updated.tmp ${FOLDERNAME}/Messages.log.all.updated' |sh
+
+grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" 'cat ${FOLDERNAME}/Messages.log.all.updated | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\\[${DATE_FORMAT}\\]" "Call-ID:\1" "NOTE_OVER_SENT" "note over\1#pink:" \> ${FOLDERNAME}/Messages.log.all.updated.tmp; mv ${FOLDERNAME}/Messages.log.all.updated.tmp ${FOLDERNAME}/Messages.log.all.updated' |sh
+
+#export MSGLIST1=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
+#~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_MESSAGE\\" \\"note over \1#lightgreen:\\"');
+#export MSGLIST2=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
+#~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_RECEIVED\\" \\"note over \1#yellow:\\"');
+#export MSGLIST3=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |
+#~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_SENT\\" \\"note over \1#pink:\\"');
+
+#echo ${MSGLIST1} ${MSGLIST2} ${MSGLIST3} | xargs echo "cat ${FOLDERNAME}/Messages.log.all.note" | sh -x | fold -w 140 > ${FOLDERNAME}/Messages.log.all.updated
 
 #grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all.updated  | sort | uniq |  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"\\\\n|\\\\r\\" \\"\\\\\\\\n\\"' | 
 #xargs echo "cat ${FOLDERNAME}/Messages.log.all.updated" | sh > ${FOLDERNAME}/Messages.log.all.updated.1
