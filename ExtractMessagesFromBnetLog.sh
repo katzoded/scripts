@@ -54,6 +54,8 @@ grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |
 grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
 ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" 'cat ${FOLDERNAME}/Messages.log.all.updated | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\\[${DATE_FORMAT}\\]" "Call-ID:\1" "NOTE_OVER_SENT" "note over\1#pink:" \> ${FOLDERNAME}/Messages.log.all.updated.tmp; mv ${FOLDERNAME}/Messages.log.all.updated.tmp ${FOLDERNAME}/Messages.log.all.updated' |sh
 
+cat ${FOLDERNAME}/Messages.log.all.updated | fold -w 140 > ${FOLDERNAME}/Messages.log.all.updated.tmp; mv ${FOLDERNAME}/Messages.log.all.updated.tmp ${FOLDERNAME}/Messages.log.all.updated;
+
 #export MSGLIST1=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
 #~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"NOTE_OVER_MESSAGE\\" \\"note over \1#lightgreen:\\"');
 #export MSGLIST2=$(grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.all  | sort | uniq |  
