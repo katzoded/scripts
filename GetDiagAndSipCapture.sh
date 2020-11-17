@@ -22,7 +22,7 @@ fi
 
 
 
-export export SIP_CAPTURE_NAME_BEFORE_CALL=$(ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | grep ' 0 ' | tail -1" | awk  '{print $9}');
+export SIP_CAPTURE_NAME_BEFORE_CALL=$(ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | grep ' 0 ' | tail -1" | awk  '{print $9}');
 
 ~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}";
 
