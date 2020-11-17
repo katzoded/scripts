@@ -22,11 +22,9 @@ fi
 
 
 
-export SIP_CAPTURE_NAME_BEFORE_CALL=$(ssh ${SSH_USER}@${HOST_IP} "sh ~/dev-newton/scripts/WatchSipCapture.sh");
+export export SIP_CAPTURE_NAME_BEFORE_CALL=$(ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | grep ' 0 ' | tail -1" | awk  '{print $9}');
 
-~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz";
-
-export SIP_CAPTURE_NAME_AFTER_CALL=$(ssh ${SSH_USER}@${HOST_IP} "sh ~/dev-newton/scripts/WatchSipCapture.sh");
+~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}";
 
 
 
@@ -51,54 +49,20 @@ fi;
 
 
 
-
-export SCP_COMMAND=$(echo "${SIP_CAPTURE_NAME_BEFORE_CALL}" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "scp ${SSH_USER}@${HOST_IP}:\1 ${LOGPATH}/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_BEFORE_CALL})");
-
-echo "${SCP_COMMAND}";
-
-
-
-
-
-${SCP_COMMAND};
-
-if [ "${SIP_CAPTURE_NAME_AFTER_CALL}" != "${SIP_CAPTURE_NAME_BEFORE_CALL}" ]; then	
-
-    export SCP_COMMAND=$(echo "${SIP_CAPTURE_NAME_AFTER_CALL}" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "scp ${SSH_USER}@${HOST_IP}:\1 ${LOGPATH}/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_AFTER_CALL})");
-
-    echo "${SCP_COMMAND}";
-
-    ${SCP_COMMAND};
-
-fi;
-
+~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "cd /archive/SIP_capture/; export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${SIP_CAPTURE_NAME_BEFORE_CALL}) | cut -d: -f1); export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1); ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}";
 
 
 if [ "${RUN_ANALYSIS}" == "y" ]; then
 
-   mv ${LOGPATH}/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_BEFORE_CALL}) ${SCS_FILE_NAME}.dir
-
-   mv ${LOGPATH}/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_AFTER_CALL}) ${SCS_FILE_NAME}.dir
-
-   
-
-   gzip -d -f ${SCS_FILE_NAME}.dir/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_BEFORE_CALL})
-
-   gzip -d -f ${SCS_FILE_NAME}.dir/${BASENAME}.$(basename ${SIP_CAPTURE_NAME_AFTER_CALL})
-
-fi;
-
-
-
-if [ "${RUN_ANALYSIS}" == "y" ]; then
-
-   mv ${LOGPATH}.pcap ${SCS_FILE_NAME}.dir
-
+   mv ${DIRNAME}/SIP_Capture.tar.gz ${SCS_FILE_NAME}.dir
+   mv ${LOGPATH}.pcap.gz ${SCS_FILE_NAME}.dir
    pushd ${SCS_FILE_NAME}.dir
-
+   tar xvf  SIP_Capture.tar.gz
+   gzip -d -f *.pcap.gz
    /cygdrive/c/Program\ Files/Wireshark/mergecap.exe -w Merged$(basename ${LOGPATH}.pcap) *.pcap
 
    popd
 
 fi;
+
 
