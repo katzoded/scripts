@@ -39,7 +39,7 @@ cat ${FOLDERNAME}/Messages.log.all.note.pre > ${FOLDERNAME}/Messages.log.all.not
 
 if [ "${EXTRA_FILTER}" != "" ]; then
     cat ${FOLDERNAME}/Messages.log.all.note.pre \
-    | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\[${DATE_FORMAT}\]" "${EXTRA_FILTER}" "^\[${DATE_FORMAT}\].*"  ""\
+    | ~/dev-newton/scripts/search.and.replace.multiline.pl "^\[${DATE_FORMAT}\]" "${EXTRA_FILTER}" "^\[${DATE_FORMAT}\]"  ""\
     > ${FOLDERNAME}/Messages.log.all.note;
 fi
 
