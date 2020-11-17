@@ -23,6 +23,7 @@ fi
 
 
 export SIP_CAPTURE_NAME_BEFORE_CALL=$(ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | grep ' 0 ' | tail -1" | awk  '{print $9}');
+echo "First SIP Capture file to download ${SIP_CAPTURE_NAME_BEFORE_CALL}";
 
 ~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}";
 
@@ -48,8 +49,8 @@ fi;
 
 
 
-
-~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "cd /archive/SIP_capture/; export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${SIP_CAPTURE_NAME_BEFORE_CALL}) | cut -d: -f1); export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1); ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}";
+~/dev-newton/scripts/UploadSipCaptures.sh "${SIP_CAPTURE_NAME_BEFORE_CALL}" "${DIRNAME}" "${HOST_IP}" "${SSH_USER}";
+#~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "cd /archive/SIP_capture/; export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${SIP_CAPTURE_NAME_BEFORE_CALL}) | cut -d: -f1); export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1); ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}";
 
 
 if [ "${RUN_ANALYSIS}" == "y" ]; then
