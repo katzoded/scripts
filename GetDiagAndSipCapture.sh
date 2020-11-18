@@ -48,6 +48,7 @@ if [ "${RUN_ANALYSIS}" == "y" ]; then
 fi;
 
 
+echo ~/dev-newton/scripts/UploadSipCaptures.sh "${SIP_CAPTURE_NAME_BEFORE_CALL}" "${DIRNAME}" "${HOST_IP}" "${SSH_USER}";
 
 ~/dev-newton/scripts/UploadSipCaptures.sh "${SIP_CAPTURE_NAME_BEFORE_CALL}" "${DIRNAME}" "${HOST_IP}" "${SSH_USER}";
 #~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "cd /archive/SIP_capture/; export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${SIP_CAPTURE_NAME_BEFORE_CALL}) | cut -d: -f1); export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1); ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}";
