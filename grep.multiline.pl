@@ -88,58 +88,17 @@ while ($line)
 				}
 		  
 		  }
-		  $cmi=$line;
+		  $cmi="";
 		  $NotCMI=1;
 		  $IsTimeLine=1;
           $PassesUserFilter=0;
 	}
-	if($line =~ /.*$UserFilter.*/)
+	if($line =~ /$UserFilter/)
 	{
 		$PassesUserFilter=1;
 	}
-	if ($line =~ /.*CCL_BaseMessage.*/)
-	{
-          $cmi.=$line;
-	      $keyVal=$keyVal+1;
-          $PassesUserFilter=0;
-		  $NotCMI=0;
-	}
-	else	
-	{
-  	    if($IsTimeLine!=1)
-		{
-			$cmi .= $line;
-		}
-		$IsTimeLine=0;
-		if ($line =~ /^CMI.*/)
-		{
-			  $StartCounting=1;
-			  $OpenBracketCount=0;
-			  $CloseBracketCount=0;
-		}
-
-		if($StartCounting == 1)
-		{
-			$OpenBracketCurrCount = () = $line =~ /\{/g;
-			$OpenBracketCount = $OpenBracketCount + $OpenBracketCurrCount;
-			$CloseBracketCurrCount = () = $line =~ /\}/g;
-			$CloseBracketCount = $CloseBracketCount + $CloseBracketCurrCount;
-#			print STDOUT "$line --- Open=$OpenBracketCount, Close=$CloseBracketCount\n";
-
-			
-			if($OpenBracketCount - $CloseBracketCount == 0)
-			{
-				if($PassesUserFilter == 1)
-				{
-					$hash{$keyVal}->{stack} = $cmi;
-					$FoundCount = $FoundCount + 1;
-				}
-				$StartCounting=0;
-			}
-		}
-	}
+    $cmi.=$line;
     MyReadline();
-
 }
 
 if($NotCMI==1)

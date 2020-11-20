@@ -113,32 +113,6 @@ while ($line)
         $cmi .= $line;
     }
     $IsTimeLine=0;
-    if ($line =~ /^CMI.*/)
-    {
-          $StartCounting=1;
-          $OpenBracketCount=0;
-          $CloseBracketCount=0;
-    }
-
-    if($StartCounting == 1)
-    {
-        $OpenBracketCurrCount = () = $line =~ /\{/g;
-        $OpenBracketCount = $OpenBracketCount + $OpenBracketCurrCount;
-        $CloseBracketCurrCount = () = $line =~ /\}/g;
-        $CloseBracketCount = $CloseBracketCount + $CloseBracketCurrCount;
-#			print STDOUT "$line --- Open=$OpenBracketCount, Close=$CloseBracketCount\n";
-
-        
-        if($OpenBracketCount - $CloseBracketCount == 0)
-        {
-            if($PassesUserFilter == 1)
-            {
-                $hash{$keyVal}->{stack} = $cmi;
-                $FoundCount = $FoundCount + 1;
-            }
-            $StartCounting=0;
-        }
-	}
     MyReadline();
 }
 
