@@ -37,6 +37,7 @@ cat ${1}.ph12 | sed -e 's/\b[0-9]\{5\}\b/0&/g; s/\b[0-9]\{4\}\b/00&/g; s/\b[0-9]
 
 
 sort ${1}.ph14 > ${1}.sort
+cat ${1}.sort | grep -v SetRealTimeReportForAccess > ${1}.sort.NoCacheManager
 
 
 
