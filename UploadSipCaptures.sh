@@ -10,5 +10,9 @@ fi
 cd /archive/SIP_capture/; 
 export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${FIRST_SIPCAPTURE_FILE}) | cut -d: -f1);
 export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1);
-echo a=\${a}, b=\${b} b-a=\$(expr \$b - \$a);
-ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a + 1)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}";
+if [ '\${a}' == '' ]; then
+    echo 'Start file \${FIRST_SIPCAPTURE_FILE} is Empty - nothing to download'
+else
+    echo a=\${a}, b=\${b} b-a=\$(expr \$b - \$a);
+    ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a + 1)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;
+fi" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}"
