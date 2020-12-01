@@ -1,6 +1,8 @@
 #!/usr/bin/bash -x
 
 export SSH_USER=root;
+export SSH_PASS=${5};
+export SSH_PASS_COMMAND=
 
 
 
@@ -11,6 +13,14 @@ if [ "${4}" != "" ]; then
 fi
 
 
+ 
+ if [ "${SSH_PASS}" != "" ]; then	
 
-scp ${SSH_USER}@${1}:${3}; ssh ${SSH_USER}@${1} "${2}"; 
+	export SSH_PASS_COMMAND="sshpass -p ${SSH_PASS}"
+
+fi
+
+${SSH_PASS_COMMAND} scp ${SSH_USER}@${1}:${3};
+${SSH_PASS_COMMAND} ssh ${SSH_USER}@${1} "${2}";
+
 

@@ -9,3 +9,5 @@ set BaseFolder=%BaseFolder:D:\Dev\CS=~\dev-newton%
 set BaseFolder=%BaseFolder:D:\dev-newton=~\dev-newton%
 set BaseFolder=%BaseFolder:\=/%
 echo %FileName%
+
+echo #include "%~nx1"

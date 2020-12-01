@@ -1,6 +1,7 @@
 export FIRST_SIPCAPTURE_FILE=${1};
 export DIRNAME=${2};
 export HOST_IP=${3};
+export SSH_PASS=${5};
 export SSH_USER=root;
 
 if [ "${4}" != "" ]; then	
@@ -15,4 +16,4 @@ if [ '\${a}' == '' ]; then
 else
     echo a=\${a}, b=\${b} b-a=\$(expr \$b - \$a);
     ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a + 1)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;
-fi" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}"
+fi" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}" "${SSH_PASS}"
