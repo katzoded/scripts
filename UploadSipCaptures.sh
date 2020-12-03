@@ -9,11 +9,11 @@ if [ "${4}" != "" ]; then
 fi
 ~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "
 cd /archive/SIP_capture/; 
-export a=\$(ls -ltr | grep -v -n ' 0 ' | grep $(basename ${FIRST_SIPCAPTURE_FILE}) | cut -d: -f1);
-export b=\$(ls -ltr | grep -v -n ' 0 ' | tail -1 | cut -d: -f1);
+export a=\$(ls -ltr | grep -n SIPmsg_ | grep $(basename ${FIRST_SIPCAPTURE_FILE}) | cut -d: -f1);
+export b=\$(ls -ltr | grep -n SIPmsg_ | tail -1 | cut -d: -f1);
 if [ '\${a}' == '' ]; then
     echo 'Start file \${FIRST_SIPCAPTURE_FILE} is Empty - nothing to download'
 else
     echo a=\${a}, b=\${b} b-a=\$(expr \$b - \$a);
-    ls -ltr | grep -v ' 0 ' | tail -\$(expr \$b - \$a + 1)| awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;
+    ls -ltr  | grep -n SIPmsg_ | tail -\$(expr \$b - \$a + 1)| grep -v ' 0 ' | awk  '{print \$9}' | xargs tar zcvf ${DIRNAME}/SIP_Capture.tar.gz;
 fi" "${DIRNAME}/SIP_Capture.tar.gz ${DIRNAME}/SIP_Capture.tar.gz" "${SSH_USER}" "${SSH_PASS}"
