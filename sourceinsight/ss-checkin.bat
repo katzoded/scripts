@@ -5,6 +5,7 @@ set SSDIR=\\172.29.1.220\archive\%4
 set SSPASS=%5
 
 set SS_FILE_NAME=%SS_FILE_NAME:D:\Dev\EmbeddedDev=$%
+set SS_FILE_NAME=%SS_FILE_NAME:S:\Dev\EmbeddedDev=$%
 set SS_FILE_NAME=%SS_FILE_NAME:\A7=%
 rem set SS_FILE_NAME=%SS_FILE_NAME:\CMG=%
 set SS_FILE_NAME=%SS_FILE_NAME:\=/%
