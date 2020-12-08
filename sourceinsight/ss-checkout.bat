@@ -8,7 +8,7 @@ set SS_FILE_NAME=%SS_FILE_NAME:D:\Dev\EmbeddedDev=$%
 set SS_FILE_NAME=%SS_FILE_NAME:\A7=%
 set SS_FILE_NAME=%SS_FILE_NAME:\=/%
 Pushd %2
-"C:\Program Files (x86)\Microsoft Visual Studio\Common\VSS\win32\ss.exe" checkout -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA
+ss.exe checkout -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA
 echo %DATE%>>%ROOT_PATH%\checkout.log
 echo %DEST_FILE_NAME%>>%ROOT_PATH%\checkout.log
 popd

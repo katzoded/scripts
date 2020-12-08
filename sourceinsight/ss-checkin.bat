@@ -9,7 +9,7 @@ set SS_FILE_NAME=%SS_FILE_NAME:\A7=%
 rem set SS_FILE_NAME=%SS_FILE_NAME:\CMG=%
 set SS_FILE_NAME=%SS_FILE_NAME:\=/%
 Pushd %2
-"C:\Program Files (x86)\Microsoft Visual Studio\Common\VSS\win32\ss.exe" checkin -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA -C-
+ss.exe checkin -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA -C-
 echo %DATE%>>%ROOT_PATH%\checkin.log
 echo %DEST_FILE_NAME%>>%ROOT_PATH%\checkin.log
 popd

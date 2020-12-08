@@ -13,7 +13,7 @@ rem set SS_FILE_NAME=%SS_FILE_NAME:%EXTRA_REGEXP%
 mkdir c:\temp\ss-compare
 
 Pushd c:\temp\ss-compare
-"C:\Program Files (x86)\Microsoft Visual Studio\Common\VSS\win32\ss.exe" get -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA
+ss.exe get -Y%USERNAME%,%SSPASS% %SS_FILE_NAME% -GL. -GWA
 popd
 
 "C:\Program Files (x86)\Beyond Compare 2\BC2.exe" "%2\%1" "c:\temp\ss-compare\%1"
