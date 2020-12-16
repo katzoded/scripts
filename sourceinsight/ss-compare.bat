@@ -1,7 +1,7 @@
 set DEST_FILE_NAME=%2\%1
 set SS_FILE_NAME=%2\%1
 set ROOT_PATH=%3
-set SSDIR=\\172.29.1.220\archive\%4
+set SSDIR=x:\%4
 set SSPASS=%5
 set EXTRA_REGEXP=%6
 
