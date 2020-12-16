@@ -5,6 +5,7 @@ set SSDIR=x:\%4
 set SSPASS=%5
 set EXTRA_REGEXP=%6
 
+set SS_FILE_NAME=%SS_FILE_NAME:okatz\=%
 set SS_FILE_NAME=%SS_FILE_NAME:D:\Dev\EmbeddedDev=$%
 set SS_FILE_NAME=%SS_FILE_NAME:S:\Dev\EmbeddedDev=$%
 set SS_FILE_NAME=%SS_FILE_NAME:\A7=%
