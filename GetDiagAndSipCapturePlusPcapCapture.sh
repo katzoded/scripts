@@ -17,7 +17,7 @@ export DIRNAME=$(dirname ${LOGPATH});
 
 
 
-if [ "${5}" != "" ]; then	
+if [ "${6}" != "" ]; then	
 
 	export SSH_USER=${6};
 

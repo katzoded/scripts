@@ -17,5 +17,5 @@ fi
 
 fi
 
-${SSH_PASS_COMMAND} ssh ${SSH_USER}@${1} "sh -x  ${2}"
+${SSH_PASS_COMMAND} ssh ${SSH_USER}@${1} "${2}"
 ${SSH_PASS_COMMAND} scp ${SSH_USER}@${1}:${3}
