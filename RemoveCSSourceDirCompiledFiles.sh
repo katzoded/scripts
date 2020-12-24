@@ -11,7 +11,7 @@ git status -s --ignored | grep "??" | grep "grammar" | /home/okatz/scripts/Repla
 
 
 
-cd ${SRC_DIR}.build;
+cd ../${SRC_DIR}.build;
 
 
 
