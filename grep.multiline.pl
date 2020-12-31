@@ -21,15 +21,74 @@ my $PassesUserFilter=0;
 my $UserFilter="";
 my $UserFilterFileName;
 my $FoundCount = 0;
-my $FoundCountNonCmi = 0;
-my $NotCMI = 0;
-my $IsTimeLine = 0;
 my $InMultilineSeparator = $ARGV[0];
+my $InMultilineEndSeparator="";
 my $InGrepFilter = $ARGV[1];
+my $InGrepVFilter=0;
 my $InFileName = $ARGV[2];
 
 my $new_file = "";
 my %hash = ();
+
+sub LoadParams
+{
+    my $NewIf = 0;
+    
+    if($ARGV[0] =~ "-h")
+    {
+        printHelp();
+    }
+    for(my $i = 0; $i < $#ARGV; $i++)
+    {
+        if($ARGV[$i] =~ /-.*/)
+        {
+            $NewIf = 1;
+        }
+    }
+    if($NewIf == 1)
+    {
+        $InMultilineSeparator = "";
+        $InGrepFilter = "";
+        $InFileName = "";
+
+        for(my $i = 0; $i < $#ARGV; $i++)
+        {
+            if($ARGV[$i] =~ "-ss")
+            {
+                $InMultilineSeparator = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] =~ "-es")
+            {
+                $InMultilineEndSeparator = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] =~ "-g")
+            {
+                $InGrepFilter = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] =~ "-gv")
+            {
+                $InGrepFilter = $ARGV[$i + 1];
+                $InGrepVFilter=1;
+            }
+            elsif($ARGV[$i] =~ "-f")
+            {
+                $InFileName = $ARGV[$i + 1];
+            }
+        }
+    }
+}
+
+sub printHelp
+{
+    print STDOUT "\n-h Print this help";
+    print STDOUT "\n-ss \"RegEx for Start Separator\"";
+    print STDOUT "\n-es \"RegEx for End Separator\" (in case -es doesn't exist only -ss will be used)";
+    print STDOUT "\n-g \"RegEx for grepping the multiline\" whatever passes this RegEx will be in output";
+    print STDOUT "\n-gv \"RegEx for grepping the multiline\" whatever passes this RegEx will NOT be in output";
+    print STDOUT "\n-f \"Input file name\" - this param is not mandatory, STDIN can be used as input ";
+    print STDOUT "\nSupport backward comp of using \"RegExp for Start Separator\" \"RegEx for grepping the multiline\" \"Input File name\"";
+    exit;
+}
 
 sub MyReadline
 {
@@ -42,6 +101,18 @@ sub MyReadline
         $line = <STDIN>;
     }
 }
+sub CheckAndAddToResult
+{
+    if(($PassesUserFilter == 1 && $InGrepVFilter == 0) ||  ($PassesUserFilter == 0 && $InGrepVFilter == 1) )
+    {
+        $keyVal=$keyVal+1;
+        $hash{$keyVal}->{stack} = $cmi;
+    }
+    $cmi="";
+    $PassesUserFilter=0;
+}
+
+LoadParams();
 if($InFileName)
 {
     open(INFILE,$InFileName);
@@ -76,41 +147,38 @@ else
 MyReadline();
 while ($line)
 {
-	if($line =~ /$InMultilineSeparator/)
-	{
-          if($NotCMI==1)
-		  {
-				if($PassesUserFilter == 1)
-				{
-					$keyVal=$keyVal+1;
-					$hash{$keyVal}->{stack} = $cmi;
-					$FoundCountNonCmi = $FoundCountNonCmi + 1;
-				}
-		  
-		  }
-		  $cmi="";
-		  $NotCMI=1;
-		  $IsTimeLine=1;
-          $PassesUserFilter=0;
-	}
-	if($line =~ /$UserFilter/)
-	{
-		$PassesUserFilter=1;
-	}
+    if($line =~ /$InMultilineSeparator/)
+    {
+        if($InMultilineEndSeparator =~ "")
+        {
+            CheckAndAddToResult();
+        }
+        else
+        {
+            $FoundCount=$FoundCount+1;
+        }
+    }
+    if($line =~ /$UserFilter/)
+    {
+        $PassesUserFilter=1;
+    }
     $cmi.=$line;
+    if(not $InMultilineEndSeparator =~ "")
+    {
+        if($FoundCount > 0 && $line =~ /$InMultilineEndSeparator/)
+        {
+            $FoundCount=$FoundCount-1;
+            
+            if($FoundCount == 0)
+            {
+                CheckAndAddToResult();
+            }
+        }       
+    }
     MyReadline();
 }
 
-if($NotCMI==1)
-{
-	if($PassesUserFilter == 1)
-	{
-		$keyVal=$keyVal+1;
-		$hash{$keyVal}->{stack} = $cmi;
-		$FoundCountNonCmi = $FoundCountNonCmi + 1;
-	}
-
-}
+CheckAndAddToResult();
 
 my $fh;
 if($new_file)
