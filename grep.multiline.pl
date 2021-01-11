@@ -40,7 +40,7 @@ sub LoadParams
     }
     for(my $i = 0; $i < $#ARGV; $i++)
     {
-        if($ARGV[$i] =~ /-.*/)
+        if($ARGV[$i] =~ /^-.*/)
         {
             $NewIf = 1;
         }
@@ -149,7 +149,7 @@ while ($line)
 {
     if($line =~ /$InMultilineSeparator/)
     {
-        if($InMultilineEndSeparator =~ "")
+        if($InMultilineEndSeparator eq "")
         {
             CheckAndAddToResult();
         }

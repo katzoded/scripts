@@ -1,0 +1,158 @@
+----------------------------------------------- 2021-01-06 18:44:35:645.678
+UDP message sent (891 bytes):
+
+INVITE sip:1235555@127.0.0.1:5060;user=phone SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-0
+From: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: sut <sip:1235555@127.0.0.1:5060>
+Call-ID: 1-14056@127.0.0.1
+Contact: <sip:127.0.0.1:5064;transport=UDP;Dpt=eaea-200;Hpt=8e68_16;CxtId=4;TRC=ffffffff-ffffffff>;video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
+CSeq: 1 INVITE
+X-Call-Record: both
+Max-Forwards: 62
+Accept: application/sdp
+Privacy: none
+Session-Expires: 1800;refresher=uac
+Supported: 100rel,precondition,timer,record-aware
+Allow: INVITE,ACK,BYE,CANCEL,PRACK,INFO,REFER,UPDATE,OPTIONS,SUBSCRIBE,NOTIFY
+Min-SE: 900
+Content-Type: application/sdp
+Content-Length:   164
+
+v=0
+o=HPE-AS 4217 2 IN IP4 10.170.101.7
+s=-
+c=IN IP4 127.0.0.1
+t=0 0
+m=audio 6002 RTP/AVP 0 8
+c=IN IP4 127.0.0.1
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-06 18:44:35:670.236
+UDP message received [388] bytes :
+
+SIP/2.0 100 Trying
+From: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: sut <sip:1235555@127.0.0.1:5060>
+Call-ID: 1-14056@127.0.0.1
+CSeq: 1 INVITE
+Date: Wed, 06 Jan 2021 02:44:35 GMT
+Server: I-Gate 4000 Edge SIP GW (,,)
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-0
+Contact: <sip:1235555@127.0.0.1:5060;user=phone>
+Content-Type: application/sdp
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-06 18:44:36:313.668
+UDP message received [637] bytes :
+
+SIP/2.0 183 Session Progress
+From: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: sut <sip:1235555@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 1 INVITE
+Date: Wed, 06 Jan 2021 02:44:36 GMT
+Server: I-Gate 4000 Edge SIP GW (,,)
+Require: 100rel
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-0
+RSeq: 585
+Contact: <sip:1235555@127.0.0.1:5060;user=phone>
+Content-Type: application/sdp
+Content-Length: 161
+
+v=0
+o=HPE-AS 1988469054 4213746593 IN IP4 10.170.101.121
+s=-
+c=IN IP4 255.255.255.255
+m=audio 50000 RTP/AVP 0 8
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-06 18:44:36:314.055
+UDP message sent (356 bytes):
+
+PRACK sip:1235555@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK947f.c92cde7e88864cbc9b552394784c
+From: sipp <sip:sipp@127.0.0.1:5064>;tag=1
+To: sut <sip:service@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 2 PRACK
+RAck:  585 1 INVITE
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-06 18:44:36:315.255
+UDP message received [397] bytes :
+
+SIP/2.0 200 OK
+From: sipp <sip:sipp@127.0.0.1:5064>;tag=1
+To: sut <sip:service@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 2 PRACK
+Date: Wed, 06 Jan 2021 02:44:36 GMT
+Server: I-Gate 4000 Edge SIP GW (,,)
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK947f.c92cde7e88864cbc9b552394784c
+Content-Type: application/sdp
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-06 18:44:46:757.774
+UDP message received [541] bytes :
+
+SIP/2.0 200 OK
+From: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: sut <sip:1235555@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 1 INVITE
+Date: Wed, 06 Jan 2021 02:44:46 GMT
+Server: I-Gate 4000 Edge SIP GW (,,)
+Require: timer
+Allow: INVITE,PRACK,UPDATE,ACK,CANCEL,BYE,INFO,OPTIONS
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-0
+Contact: <sip:1235555@127.0.0.1:5060;user=phone>
+Session-Expires: 1800;refresher=uac
+Content-Type: application/sdp
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-06 18:44:46:763.376
+UDP message sent (329 bytes):
+
+ACK sip:1235555@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-13
+From: 447700900000 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: 1235555 <sip:1235555@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 1 ACK
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-06 18:44:56:775.801
+UDP message sent (329 bytes):
+
+BYE sip:1235555@127.0.0.1:5060 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-16
+From: 447700900000 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: 1235555 <sip:1235555@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 10 BYE
+Max-Forwards: 70
+Content-Length:0
+
+
+----------------------------------------------- 2021-01-06 18:44:56:781.483
+UDP message received [288] bytes :
+
+SIP/2.0 200 OK
+From: 447700900000 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: 1235555 <sip:1235555@127.0.0.1:5060>;tag=c3742c8-0-13c4-50022-25c048-4deaa19b-25c048
+Call-ID: 1-14056@127.0.0.1
+CSeq: 10 BYE
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-14056-1-16
+Content-Length: 0
+
+
