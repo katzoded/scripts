@@ -53,24 +53,24 @@ sub LoadParams
 
         for(my $i = 0; $i < $#ARGV; $i++)
         {
-            if($ARGV[$i] =~ "-ss")
+            if($ARGV[$i] eq "-ss")
             {
                 $InMultilineSeparator = $ARGV[$i + 1];
             }
-            elsif($ARGV[$i] =~ "-es")
+            elsif($ARGV[$i] eq "-es")
             {
                 $InMultilineEndSeparator = $ARGV[$i + 1];
             }
-            elsif($ARGV[$i] =~ "-g")
-            {
-                $InGrepFilter = $ARGV[$i + 1];
-            }
-            elsif($ARGV[$i] =~ "-gv")
+            elsif($ARGV[$i] eq "-gv")
             {
                 $InGrepFilter = $ARGV[$i + 1];
                 $InGrepVFilter=1;
             }
-            elsif($ARGV[$i] =~ "-f")
+            elsif($ARGV[$i] eq "-g")
+            {
+                $InGrepFilter = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] eq "-f")
             {
                 $InFileName = $ARGV[$i + 1];
             }
