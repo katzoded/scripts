@@ -1,0 +1,13 @@
+export XMLFILENMAE=${1}
+export REMOTE_PORT=5060
+
+if [ "${1}" == "-h" ]; then	
+	echo "[1] xml file name\n"
+	echo "[2] optional Remote port\n"
+else
+    if [ "${2}" != "" ]; then	
+        export REMOTE_PORT=${2}
+    fi
+   
+    ./sipp -sf ${XMLFILENMAE} 127.0.0.1:${REMOTE_PORT} -i 127.0.0.1 -p 5065 -r 100 -rp 1000 -trace_msg -trace_err -message_file ${XMLFILENMAE}_message.log -message_overwrite 1 -error_file ${XMLFILENMAE}_error.log -error_overwrite 1
+fi

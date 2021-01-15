@@ -69,6 +69,7 @@ a=rtpmap:8 PCMA/8000
    ]]>
     </send>
     <!--a=rtpmap:0 PCMU/8000-->
+ <label id="WaitForResponse"/>
 
     <recv response="100" optional="true" />
 
@@ -128,14 +129,28 @@ a=rtpmap:8 PCMA/8000
     From: sipp <sip:sipp@[local_ip]:[local_port]>;tag=[call_number]
     To: sut <sip:[service]@[remote_ip]:[remote_port]>[peer_tag_param]
     Call-ID: [call_id]
-    CSeq: 2 PRACK
+    CSeq: [cseq+1] PRACK
     RAck: [$1][$2]
     Max-Forwards: 70
     Content-Length: 0
    ]]>
     </send>
 
-    <recv response="200" >
+    <recv response="200">
+        <!--send lost="1" next="CancelCall">
+        <![CDATA[
+        CANCEL sip:[field1]@[remote_ip]:[remote_port];user=phone SIP/2.0
+        Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+        From: ua[call_number] <sip:[field0]@[local_ip]:[local_port]>;tag=[call_number]
+        To: sut <sip:[field1]@[remote_ip]:[remote_port]>
+       Call-ID: [call_id]
+        CSeq: 1 CANCEL
+
+
+    ]]>
+      </send-->
+     <nop next="WaitForResponse"/>
+ 
              </recv>
   <nop>
     <action>
@@ -144,6 +159,7 @@ a=rtpmap:8 PCMA/8000
           </nop>
 
 <pause distribution="uniform" min="10000" max="10000"/>
+
     <recv response="200" >
     </recv>
 
@@ -190,7 +206,7 @@ a=rtpmap:8 PCMA/8000
 
     <recv response="200" crlf="true" optional="true" next="2">
     </recv>
-    <recv request="BYE" next="2" optional="true">
+    <recv request="BYE" next="8" optional="true">
     </recv>
     <recv request="UPDATE" next="7" timeout="31000" ontimeout="6">
     </recv>
@@ -231,6 +247,12 @@ a=rtpmap:8 PCMA/8000
     <recv response="200" crlf="true" next="2">
     </recv>
     <pause distribution="uniform" min="5000" max="10000"/>
+    
+ <label id="CancelCall"/>
+
+<recv response="200" />
+
+<recv response="487" next="1"/>
 
  <label id="1"/>
     <send next="2">

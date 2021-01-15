@@ -50,7 +50,7 @@
     ]]>
    </send>
 
-<!--send lost="100" >
+<send lost="100" >
    <![CDATA[
 
    SIP/2.0 400 OK
@@ -66,7 +66,7 @@
    </send>
 
   <recv request="ACK" timeout="500" ontimeout="2" next="1"  >
-    </recv-->
+    </recv>
   <!-- The '[last_*]' keyword is replaced automatically by the -->
   <!-- specified header if it was present in the last message received  -->
   <!-- (except if it was a retransmission). If the header was not       -->
@@ -130,6 +130,7 @@ a=rtpmap:8 PCMA/8000
     ]]>
    </send>
 
+  <recv request="CANCEL" crlf="true" optional="true" next="CallCancelled"> </recv>
   <recv request="PRACK"  >
     </recv>
 
@@ -147,8 +148,12 @@ a=rtpmap:8 PCMA/8000
 
     ]]>
    </send>
-  <!--recv request="UPDATE" >
+    <recv request="CANCEL" next="CallCancelled" timeout="1000" ontimeout="NoCancel"> </recv>
+<!--recv request="UPDATE" >
            </recv-->
+
+<label id="NoCancel"/>
+
     <pause distribution="uniform" min="100" max="2000"/>
   <nop>
     <action>
@@ -251,8 +256,6 @@ Content-Transfer-Encoding: binary
   <recv request="BYE" crlf="true" next="8">
     </recv>
 
-
-
 <label id="8"/>
 <send >
    <![CDATA[
@@ -269,7 +272,41 @@ Content-Transfer-Encoding: binary
     ]]>
 
    </send>
+<label id="CallCancelled"/>
 
+  <send>
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[pid]SIPpTag05[call_number]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Content-Length: [len]
+
+    ]]>
+  </send>
+
+    <send>
+    <![CDATA[
+
+      SIP/2.0 487 Request Terminated
+      [last_Via:]
+      [last_From:]
+      [last_To:];tag=[pid]SIPpTag05[call_number]
+      [last_Call-ID:]
+      CSeq: 1 INVITE
+      Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+      Content-Length: [len]
+
+    ]]>
+  </send>
+
+
+  <recv request="ACK" rtd="true" crlf="true"> </recv>
+  
 <label id="1"/>
   <!-- Keep the call open for a while in case the 200 is lost to be     -->
   <!-- able to retransmit it if we receive the BYE again.      -->

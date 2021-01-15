@@ -1,3 +1,4 @@
+
 cat ${1} | tr '\n' ' ' | ~/dev-newton/scripts/ReplaceFileList.sh "\$[0-9]*\ =\ " "\\n" > ${1}.ph0
 
 ~/dev-newton/scripts/ReplaceFileList.sh "<.*>\ " "" ${1}.ph0 > ${1}.ph1 
