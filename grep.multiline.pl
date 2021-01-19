@@ -155,7 +155,8 @@ while ($line)
         }
         else
         {
-            $FoundCount=$FoundCount+1;
+            my @splitarr= split(/$InMultilineSeparator/,$line);
+            $FoundCount=$FoundCount+@splitarr;
         }
     }
     if($line =~ /$UserFilter/)
@@ -167,7 +168,8 @@ while ($line)
     {
         if($FoundCount > 0 && $line =~ /$InMultilineEndSeparator/)
         {
-            $FoundCount=$FoundCount-1;
+            my @splitarr= split(/$InMultilineEndSeparator/,$line);
+            $FoundCount=$FoundCount-@splitarr;
             
             if($FoundCount == 0)
             {

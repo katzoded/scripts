@@ -1,13 +1,28 @@
 export XMLFILENMAE=${1}
 export REMOTE_PORT=5060
+export REMOTE_IP=127.0.0.1
+export LOCAL_PORT=5065
+export LOCAL_IP=127.0.0.1
 
 if [ "${1}" == "-h" ]; then	
 	echo "[1] xml file name\n"
 	echo "[2] optional Remote port\n"
+	echo "[3] optional Local port\n"
+	echo "[4] optional Remote IP\n"
+	echo "[5] optional Local IP\n"
 else
     if [ "${2}" != "" ]; then	
         export REMOTE_PORT=${2}
     fi
+    if [ "${3}" != "" ]; then	
+        export LOCAL_PORT=${3}
+    fi
+    if [ "${4}" != "" ]; then	
+        export REMOTE_IP=${4}
+    fi
+    if [ "${5}" != "" ]; then	
+        export LOCAL_IP=${5}
+    fi
    
-    ./sipp -sf ${XMLFILENMAE} 127.0.0.1:${REMOTE_PORT} -i 127.0.0.1 -p 5065 -r 100 -rp 1000 -trace_msg -trace_err -message_file ${XMLFILENMAE}_message.log -message_overwrite 1 -error_file ${XMLFILENMAE}_error.log -error_overwrite 1
+    ./sipp -sf ${XMLFILENMAE} ${REMOTE_IP}:${REMOTE_PORT} -i ${LOCAL_IP} -p ${LOCAL_PORT} -r 100 -rp 1000 -trace_msg -trace_err -message_file ${XMLFILENMAE}_message.log -message_overwrite 1 -error_file ${XMLFILENMAE}_error.log -error_overwrite 1
 fi
