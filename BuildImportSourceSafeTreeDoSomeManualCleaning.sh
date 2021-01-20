@@ -30,14 +30,14 @@ cat ${SOURCESAFE_HISTORY_DATAFILE}.clean \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "REPLACEWITHGITPATH/Igate/ig4s.*/" "REPLACEWITHGITPATH/Igate/Ig4s/" \
 > ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed
 
-cat ${SOURCESAFE_HISTORY_DATAFILE}.clean \
+cat ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed \
 | awk 'BEGIN { FS = "\"" } ; { print $2 }' | sort | uniq -c | sort | grep -v " 1 " \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^\ *[0-9]* " \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "\"\1\"" > ${SOURCESAFE_HISTORY_DATAFILE}.grepfile
 
 
 
-cat ${SOURCESAFE_HISTORY_DATAFILE}.clean | grep -f ${SOURCESAFE_HISTORY_DATAFILE}.grepfile |sort -f +4 | uniq > ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck
-cat ${SOURCESAFE_HISTORY_DATAFILE}.clean | grep -v -f ${SOURCESAFE_HISTORY_DATAFILE}.grepfile > ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck
+cat ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed | grep -f ${SOURCESAFE_HISTORY_DATAFILE}.grepfile |sort -f +4 | uniq > ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck
+cat ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed | grep -v -f ${SOURCESAFE_HISTORY_DATAFILE}.grepfile > ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck
 grep -v -i " Tools " ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck | grep -v "Protocols_A10_M3UA M3ua" | grep -v "DafnaBo" |grep -v "Temp" > ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1
 cat /home/okatz/dev-newton/scripts/ImportSS.Data.ManualCheck.1 /home/okatz/dev-newton/scripts/ImportSS.Data.WithoutManualCheck |sort > ${SOURCESAFE_HISTORY_DATAFILE}.Full
