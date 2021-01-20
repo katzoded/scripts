@@ -7,10 +7,20 @@ export GIT_REPOSITORY_PATH=${5}
 export  SSDIR=\\\\Newton\\Archive\\${SOURCESAFE_DB}
 
 mkdir -p ${GIT_REPOSITORY_PATH}/${SOURCESAFE_DB}/${SOURCESAFE_PROJECT};
-rm -fr ${GIT_REPOSITORY_PATH}/${SOURCESAFE_DB}/${SOURCESAFE_PROJECT}/*;
 
 cd ${GIT_REPOSITORY_PATH}/${SOURCESAFE_DB}/${SOURCESAFE_PROJECT};
-git checkout -B ${SOURCESAFE_SUB_TREE}
+export  GITBRANCH=$(git branch --list | grep "${SOURCESAFE_SUB_TREE}");
+echo "git branch \"${GITBRANCH}\""
+
+if [ "" == "${GITBRANCH}" ]; then
+	echo "git checkout -B ${SOURCESAFE_SUB_TREE}"
+	git checkout -B ${SOURCESAFE_SUB_TREE}
+else
+	echo "git checkout -f ${SOURCESAFE_SUB_TREE}"
+	git checkout -f ${SOURCESAFE_SUB_TREE}
+fi
+
+rm -fr ${GIT_REPOSITORY_PATH}/${SOURCESAFE_DB}/${SOURCESAFE_PROJECT}/*;
 ss Get -I- -GL. -R -W -V"L${SOURCESAFE_LABEL}" -Yokatz,Johanson23 ${SOURCESAFE_SUB_TREE}/${SOURCESAFE_PROJECT};
 cd ${GIT_REPOSITORY_PATH}/
 find ${SOURCESAFE_DB}/${SOURCESAFE_PROJECT} -name "*.scc" | xargs rm

@@ -9,7 +9,7 @@ cat ${SOURCESAFE_HISTORY_DATAFILE} \
 | grep -v "is not an existing filename or project" \
 | grep -v "Building list for"> ${SOURCESAFE_HISTORY_DATAFILE}.clean
 
-echo "mkdir ${GIT_REPOSITORY_PATH}; cd ${GIT_REPOSITORY_PATH}; git init;" > DoCommands.sh
+echo "export GIT_REPOSITORY_PATH=${2}; mkdir ${GIT_REPOSITORY_PATH}; cd ${GIT_REPOSITORY_PATH}; git init;" > DoCommands.sh
 
 cat ${SOURCESAFE_HISTORY_DATAFILE}.clean \
 | awk  '{print "\""$1" "$3"\" "$5" "$6" "$7" "$4}' \
