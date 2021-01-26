@@ -344,10 +344,31 @@ a=rtpmap:8 PCMA/8000
 <nop next="EndPcapPlay" /> 
  <label id="EndPcapPlay"/>
 
-  
+<label id="Active"/>
+
+  <recv request="INFO" optional="true" next="Response200AndBackToWait" crlf="true">
+    </recv>
+
   <recv request="BYE" crlf="true" next="8">
     </recv>
 
+
+<label id="Response200AndBackToWait"/>
+<send next="Active">
+   <![CDATA[
+
+   SIP/2.0 200 OK
+   [last_Via:]
+   [last_From:]
+   [last_To:]
+   [last_Call-ID:]
+   [last_CSeq:]
+   Contact: <sip:[local_ip]:[local_port];transport=[transport]>
+   Content-Length: 0
+
+    ]]>
+
+ </send>
 
 
 <label id="8"/>

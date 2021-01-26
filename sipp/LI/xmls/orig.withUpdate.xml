@@ -80,6 +80,7 @@ Session-Expires: 1800;refresher=uac
 Supported: 100rel,precondition,timer,record-aware
 Allow: INVITE,ACK,BYE,CANCEL,PRACK,INFO,REFER,UPDATE,OPTIONS,SUBSCRIBE,NOTIFY
 Min-SE: 900
+P-Asserted-Identity: <tel:[field0];cpc=ordinary>
 Content-Type: application/sdp
 Content-Length: [len]
 
@@ -215,6 +216,27 @@ a=rtpmap:8 PCMA/8000
     </nop>    
 <nop next="EndPcapPlay" /> 
  <label id="EndPcapPlay"/>
+
+<send >
+<![CDATA[
+INFO sip:[field1]@[remote_ip]:[remote_port];user=phone SIP/2.0
+Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[$InviteBranch]
+[last_From:]
+[last_To:]
+[last_Call-ID:]
+CSeq: [cseq] INFO
+Content-Length: [len]
+Content-Type: application/ISUP;base=itu-92+;version=itu-t92+
+Content-Disposition: signal;handling=required
+Content-Transfer-Encoding: binary
+
+\x00\x00\x13\x01\x00
+   ]]>
+    </send>
+    <!--a=rtpmap:0 PCMU/8000-->
+<recv response="200" />
+
+
 
  <label id="4"/>
 <pause distribution="uniform" min="10000" max="10000"/>
