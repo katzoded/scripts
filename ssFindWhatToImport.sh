@@ -29,10 +29,11 @@ else
     | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\([0-9]*\)/\([0-9]*\)/\([0-9]*\)\ " "20\3 \2 \1 " \
     | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\([0-9]*\):\([0-9]*\)\ " "\1 \2 " \
     | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)\(\"[a-zA-Z0-9 \._-]*\"\)\(.*\)" "\1 \3 \2" \
-    | awk '{ printf "%s/%02d/%02d %02d:%02d %s %s %s %s REPLACEWITHGITPATH/%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $6, $7, $8}' \
+    | awk '{ printf "%s/%02d/%02d %02d:%02d %s %s %s %s REPLACEWITHGITPATH_REPLACEWITHSPACE/%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $6, $7, $8}' \
     | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "/$/" "/" \
     | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "REPLACEWITHGITPATH" "${GIT_REPOSITORY_PATH}" \
     | awk  '{print "~/dev-newton/scripts/DoImportSourceSafeFilesAndCommit.sh "$3" "$4" "$5" "$6" "$7 }' \
+    | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "_REPLACEWITHSPACE" " " \
     | tee -a /tmp/import.ssver.sh
 fi
 
