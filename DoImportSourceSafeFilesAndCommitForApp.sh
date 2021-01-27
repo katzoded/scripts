@@ -2,9 +2,10 @@ export SOURCESAFE_DB=${1}
 export SOURCESAFE_SUB_TREE=${2}
 export SOURCESAFE_PROJECT=${3}
 export SOURCESAFE_LABEL=${4}
-export GIT_REPOSITORY_HOME=${5};
-export GIT_REPOSITORY_PATH=${6};
+export GIT_REPOSITORY_HOME=$(echo "${5}" | tr '[:upper:]' '[:lower:]');
+export GIT_REPOSITORY_PATH=$(echo "./${6}" | tr '[:upper:]' '[:lower:]');
 export GIT_BRANCH_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_SUB_TREE}" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "/" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\$");
+export GIT_TAG_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_PROJECT}_${SOURCESAFE_LABEL}");
 
 export  SSDIR=\\\\Newton\\Archive\\${SOURCESAFE_DB}
 
@@ -27,4 +28,6 @@ git checkout -f ${GIT_BRANCH_NAME}
 ~/dev-newton/scripts/DoImportSourceSafeFilesAndCommit.sh $@
 export SSVERFILENAME=$(find ${GIT_REPOSITORY_PATH} -type f | grep -i "ssver.bat")
  
-ImportSourceSafeIntoGit-BuildSSVER.sh ${SSVERFILENAME} ${GIT_REPOSITORY_HOME};
+~/dev-newton/scripts/ImportSourceSafeIntoGit-BuildSSVER.sh ${GIT_REPOSITORY_HOME}/${SSVERFILENAME} ${GIT_REPOSITORY_HOME};
+sh -x /tmp/import.ssver.sh;
+git tag -f -a -m "${GIT_TAG_NAME}" "${GIT_TAG_NAME}"

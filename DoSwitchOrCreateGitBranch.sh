@@ -1,6 +1,6 @@
 export SOURCESAFE_DB=${1}
 export SOURCESAFE_SUB_TREE=${2}
-export GIT_REPOSITORY_PATH=${3};
+export GIT_REPOSITORY_PATH=$(echo ${3} | tr '[:upper:]' '[:lower:]');
 export GIT_BRANCH_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_SUB_TREE}" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "/" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\$");
 
 mkdir -p ${GIT_REPOSITORY_PATH};
