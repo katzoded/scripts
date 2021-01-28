@@ -25,6 +25,7 @@ cat "/tmp/workSSver.bat.data" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\\\\w" " " \
 | awk '{print $2}' \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\\\\\\\\newton\\\\archive\\\\\(.*\)\.out\\\\\(.*\)\\\\\(.*\)\\\\\([0-9a-zA-Z]*\)\\\\.*" "~/dev-newton/scripts/ssFindWhatToImport.sh ${GIT_REPOSITORY_PATH} \1 \2 \3 \4" \
+| grep -v "\\\\" \
 | sort | uniq \
 | grep "ssFindWhatToImport.sh"  > /tmp/importCurrentSSver.sh
  
@@ -37,6 +38,7 @@ cat "/tmp/workSSver.bat.data" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "SET SSDIR" "\n" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh ".*=\\\\\\\\newton\\\\archive\\\\\([a-zA-Z]*\);" "\1 " \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\([a-zA-Z]*\).*-vl\(.*\)" "~/dev-newton/scripts/ssFindWhatToImport.sh ${GIT_REPOSITORY_PATH} \1 \2" \
+| grep -v "\\\\" \
 | grep "ssFindWhatToImport.sh" >> /tmp/importCurrentSSver.sh
 
 echo "" > /tmp/import.ssver.sh

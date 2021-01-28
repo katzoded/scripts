@@ -2,11 +2,8 @@
 export SOURCESAFE_HISTORY_DATAFILE=${1}
 export GIT_REPOSITORY_PATH=$(echo "${2}" | tr '[:upper:]' '[:lower:]');
 
-
 cat ${SOURCESAFE_HISTORY_DATAFILE} \
 | grep -v "Label:" \
-| grep -v Share \
-| grep -v SHARE \
 | grep -v "is not an existing filename or project" \
 | grep -v "Building list for" \
 | awk  '{print $1" "$3" "$5" "$6" "$7" "$4}' \
