@@ -1,6 +1,6 @@
 export IMPORT_DATA_FILE=${1}
 
-cat ${IMPORT_DATA_FILE} | grep -i igate | grep -e "ig4p" -e "ig4k" -e "ig4s" | grep -v -i infra \
+cat ${IMPORT_DATA_FILE} | grep -i igate | grep -e "[iI][gG]4[pPkKsS]" | grep -v -i infra \
 | grep -v "Label:" \
 | grep -v Share \
 | grep -v SHARE \
