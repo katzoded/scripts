@@ -35,7 +35,7 @@ elif [ ${NUMBEROF_IMPORTLINES} -gt 1 ]; then
 	export  SSCHECKFORACCURACY=$(cat /tmp/ImportedDataMultipleLines.data \
 	| grep -i protocols \
 	| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh ".*\".*\.\([a-zA-Z]*\)\.\([0-9][0-9][0-9][0-9]\)\".*" "\1" \
-	| sort -r \
+	| sort -r | uniq \
 	| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(.*\)" "| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh \1 \\\\");
 	
 	for var in "$@"
@@ -54,8 +54,9 @@ elif [ ${NUMBEROF_IMPORTLINES} -gt 1 ]; then
 	export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh P603_"
 	export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh P604_"
 	export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '\.'"
+	export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '\ '"
 
-#	echo "${SSCHECKFORACCURACY}"
+	#echo "${SSCHECKFORACCURACY}"
 	export ACCURACYRESULT=$(echo "echo '${IMPORTED_DATA}' | sort | grep -n \"\" ${SSCHECKFORACCURACY}" | sh | grep \"\" | awk 'BEGIN {FS=":"}; {print $1}' | head -1);
 	
 	echo "the import of

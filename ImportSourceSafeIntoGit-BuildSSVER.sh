@@ -8,13 +8,13 @@ export SSIMPORT_SECTION_ENDS=$(cat -n ${SSVER_FILE} | grep -v pcout | grep -v DS
 
 #Will replace all set variables of this file to have their values
 echo "cat ${SSVER_FILE} \\" > /tmp/workSSver.bat.sh; 
-cat ${SSVER_FILE} | grep -i set \
+cat ${SSVER_FILE} | grep -i set | grep -v WIND_BASE\
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*[sS][eE][tT]\ \(.*\)=\(.*\)\r" \
 "| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '%\1%' '\2' \\\\" >> /tmp/workSSver.bat.sh; 
 echo "| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '\\\\P85X' '' \\" >> /tmp/workSSver.bat.sh; 
 echo "| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '\\\\PPC' '' \\" >> /tmp/workSSver.bat.sh; 
 echo "| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh '\\\\ANY' '' \\" >> /tmp/workSSver.bat.sh; 
-echo "| grep -v pcout | grep -v DSP" >> /tmp/workSSver.bat.sh; 
+echo "| grep -v pcout | grep -v DSP"  >> /tmp/workSSver.bat.sh; 
 chmod +x /tmp/workSSver.bat.sh; 
 /tmp/workSSver.bat.sh | tail -$(expr ${TOTALNUMOFLINE} - ${SSIMPORT_SECTION_BEGIN})  | head -$(expr ${SSIMPORT_SECTION_ENDS} - ${SSIMPORT_SECTION_BEGIN}) > /tmp/workSSver.bat.data
 #/tmp/workSSver.bat.sh | tail -${SSIMPORT_SECTION_BEGIN} -n $(expr ${SSIMPORT_SECTION_ENDS} - ${SSIMPORT_SECTION_BEGIN})

@@ -2,12 +2,17 @@ export SOURCESAFE_DB=${1}
 export SOURCESAFE_SUB_TREE=${2}
 export SOURCESAFE_PROJECT=${3}
 export SOURCESAFE_LABEL=${4}
+export SOURCESAFE_LABEL_VERONLY=$(echo "${SOURCESAFE_LABEL}" | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh ".*\.\([0-9][0-9a-zA-Z]*\)" "\1");
 export GIT_REPOSITORY_HOME=$(echo "${5}" | tr '[:upper:]' '[:lower:]');
 export GIT_REPOSITORY_PATH=$(echo "./${6}" | tr '[:upper:]' '[:lower:]');
 export GIT_BRANCH_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_SUB_TREE}" \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "/" \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\$" \
 | tr '[:upper:]' '[:lower:]');
+export GIT_TAG_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_SUB_TREE}_${SOURCESAFE_PROJECT}_${SOURCESAFE_LABEL_VERONLY}" \
+| tr '[:upper:]' '[:lower:]' \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\\$" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/" );
 
 export  SSDIR=\\\\Newton\\Archive\\${SOURCESAFE_DB}
 
