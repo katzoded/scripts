@@ -9,6 +9,7 @@ cat ${IMPORT_DATA_FILE} | grep -i igate | grep -e "[iI][gG]4[pPkKsS]" | grep -v 
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "/$/" "/" \
 | awk  '{print "~/dev-newton/scripts/DoImportSourceSafeFilesAndCommitForApp.sh "$1" "$2" "$3" "$4" "$5" "$6}' \
 | grep "$/" \
+| uniq \
 | tee /tmp/import.App.sh
 
 

@@ -41,7 +41,9 @@ cat ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed | grep -f ${SOURCESAFE_HISTORY_DA
 cat ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed | grep -v -f ${SOURCESAFE_HISTORY_DATAFILE}.grepfile > ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck
 grep -v -i " Tools " ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck | grep -v "Protocols_A10_M3UA M3ua" | grep -v "DafnaBo" |grep -v "Temp" > ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1
 
-cat ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1 ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck | sort \
+cat ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1 ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck | sort | uniq \
 | awk  '{print $3" "$4" "$5" "$6" "$7" "$8}' \
 | grep -v "(" | grep -v ")" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(/home/okatz/ss /[a-zA-Z]*/[a-zA-Z]*\)\..*/" "\1/" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(/home/okatz/ss /[a-zA-Z]*/[a-zA-Z]*/[a-zA-Z]*\)\..*" "\1" \
 > ${SOURCESAFE_HISTORY_DATAFILE}.Full
