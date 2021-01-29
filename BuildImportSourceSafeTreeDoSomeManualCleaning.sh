@@ -44,6 +44,6 @@ grep -v -i " Tools " ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck | grep -v "Proto
 cat ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1 ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck | sort | uniq \
 | awk  '{print $3" "$4" "$5" "$6" "$7" "$8}' \
 | grep -v "(" | grep -v ")" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(/home/okatz/ss /[a-zA-Z]*/[a-zA-Z]*\)\..*/" "\1/" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(/home/okatz/ss /[a-zA-Z]*/[a-zA-Z]*/[a-zA-Z]*\)\..*" "\1" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /[a-zA-Z]*/[a-zA-Z]*\)\..*/" "\1/" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /[a-zA-Z]*/[a-zA-Z]*/[a-zA-Z]*\)\..*" "\1" \
 > ${SOURCESAFE_HISTORY_DATAFILE}.Full
