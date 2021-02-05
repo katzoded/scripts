@@ -20,13 +20,6 @@ cat ${SOURCESAFE_HISTORY_DATAFILE}.clean \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/SipGw/Gateway.*/" "REPLACEWITHGITPATH_REPLACEWITHSPACE/SipGw/Gateway/" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/Protocols/Protocols.*/" "REPLACEWITHGITPATH_REPLACEWITHSPACE/Protocols/Protocols/" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/Protocols/Protocols/TrilliumInfraStructure" "REPLACEWITHGITPATH_REPLACEWITHSPACE/Protocols/Protocols/TrilliumInfra" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/Ig4p.*/" "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/Ig4p/" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/ig4s.*/" "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/Ig4s/" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/Ig4k.*/" "REPLACEWITHGITPATH_REPLACEWITHSPACE/Igate/Ig4k/" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/cmg.*/" "/cmg" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/dspk.*/" "/dspk" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/tpsm.*/" "/tpsm" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/tdm.*/" "/tdm" \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "REPLACEWITHGITPATH" "${GIT_REPOSITORY_PATH}" \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "_REPLACEWITHSPACE" " " \
 > ${SOURCESAFE_HISTORY_DATAFILE}.clean.fixed
@@ -44,6 +37,16 @@ grep -v -i " Tools " ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck | grep -v "Proto
 cat ${SOURCESAFE_HISTORY_DATAFILE}.ManualCheck.1 ${SOURCESAFE_HISTORY_DATAFILE}.WithoutManualCheck | sort | uniq \
 | awk  '{print $3" "$4" "$5" "$6" "$7" "$8}' \
 | grep -v "(" | grep -v ")" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /[a-zA-Z]*/[a-zA-Z]*\)\..*/" "\1/" \
-| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /[a-zA-Z]*/[a-zA-Z]*/[a-zA-Z]*\)\..*" "\1" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*/.*\)\..*" "\1" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*/.*\)\..*" "\1" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*/.*\)\..*" "\1" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*/.*\)\..*" "\1" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*\)\..*/\(.*\)" "\1/\2" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*\)\..*/\(.*\)" "\1/\2" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*\)\..*/\(.*\)" "\1/\2" \
+| /home/okatz/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\(${GIT_REPOSITORY_PATH} /.*/.*\)\..*/\(.*\)" "\1/\2" \
 > ${SOURCESAFE_HISTORY_DATAFILE}.Full
+
+cat ${SOURCESAFE_HISTORY_DATAFILE}.Full | awk '{print $1}' | sort | uniq | grep -v "\"" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "cat ${SOURCESAFE_HISTORY_DATAFILE}.Full | grep -e \"^\1 \" > ${SOURCESAFE_HISTORY_DATAFILE}.Full.\1" \
+| sh

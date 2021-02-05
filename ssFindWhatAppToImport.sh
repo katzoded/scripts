@@ -13,3 +13,15 @@ cat ${IMPORT_DATA_FILE} | grep -i igate | grep -e "[iI][gG]4[pPkKsS]" | grep -v 
 | tee /tmp/import.App.sh
 
 
+
+cat /tmp/import.App.sh | sort -i > /tmp/import.App.sorted.sh;
+
+cat /tmp/import.App.sorted.sh | awk '{print $4}' | sort | uniq -i | grep -v -e [\._] \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "cat /tmp/import.App.sorted.sh | grep -i '\1 '" \
+| sh | tr '[:upper:]' '[:lower:]' | awk '{print $2" "$3" "$4}' | sort | uniq \
+|~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\) $/\(.*\) \(.*\)" "\1 $/\2 \3 \"\1.\2\" \"\1.\2_\3_##\"" > /tmp/NewBranch.data
+
+cat /tmp/import.App.sorted.sh | awk '{print $4}' | sort | uniq -i | grep -e [\._] \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "cat /tmp/import.App.sorted.sh | grep -i '\1 '" \
+| sh | tr '[:upper:]' '[:lower:]' | awk '{print $2" "$3" "$4}' | sort | uniq \
+ |~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\) $/\(.*\) \(.*\)\([\._]\)\(.*\)" "\1 $/\2 \3\4\5 \"\1.\2.\3\4\5\" \"\1.\2_\3_##\"" >> /tmp/NewBranch.data
