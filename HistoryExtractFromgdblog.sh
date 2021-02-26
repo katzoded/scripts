@@ -1,11 +1,42 @@
 
-cat ${1} | tr '\n' ' ' | ~/dev-newton/scripts/ReplaceFileList.sh "\$[0-9]*\ =\ " "\\n" > ${1}.ph0
+cat ${1} \
+| tr '\n' ' ' \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "{" "\\n{" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "}" "}\\n" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "[a-zA-Z0-9_]* = " \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "([a-zA-Z0-9_, \*&]*)" \
+| grep -e"[{}]" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "{" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "}" \
+| ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh " " \
+> ${1}.ph0
+
+cat ${1}.ph0 \
+| awk 'BEGIN { FS = "," } ; {print $7 " " $8 " " $6":"$5"("$1","$2","$3","$4")"}' \
+>${1}.ph1
+
+cat ${1}.ph1 \
+| sed -e 's/\b[0-9]\{5\}\b/0&/g; s/\b[0-9]\{4\}\b/00&/g; s/\b[0-9]\{3\}\b/000&/g; s/\b[0-9]\{2\}\b/0000&/g; s/\b[0-9]\b/00000&/g' \
+>${1}.ph2
+
+~/dev-newton/scripts/ReplaceFileList.sh "^\([0-9]*\) \([0-9]*\)\b" "\1.\2" ${1}.ph2 > ${1}.ph3
+
+
+
+sort ${1}.ph3 > ${1}.sort
+cat ${1}.sort | grep -v SetRealTimeReportForAccess > ${1}.sort.NoCacheManager
+
+
+exit
+
 
 ~/dev-newton/scripts/ReplaceFileList.sh "<.*>\ " "" ${1}.ph0 > ${1}.ph1 
 
 ~/dev-newton/scripts/ReplaceFileList.sh "<.*>," "," ${1}.ph1 > ${1}.ph2 
 
 ~/dev-newton/scripts/ReplaceFileList.sh "\ \ " " " ${1}.ph2 | ~/dev-newton/scripts/ReplaceFileList.sh "\ \ " " " | ~/dev-newton/scripts/ReplaceFileList.sh "\ \ " " " | ~/dev-newton/scripts/ReplaceFileList.sh "\ \ " " " > ${1}.ph2.1
+
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "[a-zA-Z0-9_]* = " | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "<.*>"
 
 ~/dev-newton/scripts/ReplaceFileList.sh "{m_Identifier = \([0-9]*\)," "\1" ${1}.ph2.1 > ${1}.ph3
 
