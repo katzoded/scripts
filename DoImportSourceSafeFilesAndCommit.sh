@@ -30,9 +30,10 @@ if [ "" == "${GITTAGEXISTANCE}" ]; then
     find ./ -name "*.scc" | xargs rm
 	cd ${GIT_REPOSITORY_HOME};
     git add ${GIT_REPOSITORY_PATH}
-    git commit -m "${SOURCESAFE_LABEL}" ${GIT_REPOSITORY_PATH};
+    git commit -m "${GIT_TAG_NAME}" ${GIT_REPOSITORY_PATH};
     git tag -f -a -m "${GIT_TAG_NAME}" "${GIT_TAG_NAME}"
 else
     git checkout -f ${GIT_TAG_NAME} ${GIT_REPOSITORY_PATH}
+    git commit -m "${GIT_TAG_NAME}" ${GIT_REPOSITORY_PATH};
 fi
 

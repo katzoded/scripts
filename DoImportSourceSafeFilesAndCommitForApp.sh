@@ -13,6 +13,22 @@ export GIT_TAG_NAME=$(echo "${SOURCESAFE_DB}_${SOURCESAFE_SUB_TREE}_${SOURCESAFE
 | tr '[:upper:]' '[:lower:]' \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\\$" \
 | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "/" );
+export SSUSENAMEPASS=okatz,Johanson23
+export BRANCH_FROM_CONFIGURED_BRANCHES+=($(cat /tmp/NewBranch.data.ManualUpdated | grep -w -i "${SOURCESAFE_DB} ${SOURCESAFE_SUB_TREE} ${SOURCESAFE_PROJECT}" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "${SOURCESAFE_DB} ${SOURCESAFE_SUB_TREE} ${SOURCESAFE_PROJECT}" \
+| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\""));
+
+echo "BRANCH_FROM_CONFIGURED_BRANCHES[0] ${BRANCH_FROM_CONFIGURED_BRANCHES[0]}
+BRANCH_FROM_CONFIGURED_BRANCHES[1] ${BRANCH_FROM_CONFIGURED_BRANCHES[1]}
+BRANCH_FROM_CONFIGURED_BRANCHES[2] ${BRANCH_FROM_CONFIGURED_BRANCHES[2]}"
+if [ "${1}" == "sip" ]; then
+	export SSUSENAMEPASS=oded,Aniston
+fi
+
+if [ "${BRANCH_FROM_CONFIGURED_BRANCHES[0]}" != "" ]; then
+	export GIT_BRANCH_NAME=${BRANCH_FROM_CONFIGURED_BRANCHES[0]};
+	export INITIAL_BRANCH=${BRANCH_FROM_CONFIGURED_BRANCHES[1]};
+fi
 
 export  SSDIR=\\\\Newton\\Archive\\${SOURCESAFE_DB}
 
@@ -24,17 +40,40 @@ cd ${GIT_REPOSITORY_HOME};
 export  GITBRANCHEXISTANCE=$(git branch --list | grep -w "${GIT_BRANCH_NAME}");
 echo "git branch \"${GIT_BRANCH_NAME}\" exist(\"${GITBRANCHEXISTANCE}\")"
 
+export GITBRANCHCOMMAND="git branch ${GIT_BRANCH_NAME}"
+export GITCHECKOUTCOMMAND="git checkout -f ${GIT_BRANCH_NAME}"
 if [ "" == "${GITBRANCHEXISTANCE}" ]; then
-	echo "git branch ${GIT_BRANCH_NAME}"
-	git branch ${GIT_BRANCH_NAME}
+	if [ "" != "${INITIAL_BRANCH}" ]; then
+		export GITBRANCHCOMMAND="git checkout -f ${INITIAL_BRANCH} -b ${GIT_BRANCH_NAME}"
+	fi
+	echo "${GITBRANCHCOMMAND}";
+	echo "${GITBRANCHCOMMAND}" | sh;
 fi
-echo "git checkout -f ${GIT_BRANCH_NAME}"
+echo "${GITCHECKOUTCOMMAND}";
+echo "${GITCHECKOUTCOMMAND}" | sh;
+
+export Input=""; 
+#while [ "${Input}" != "Continue" ]; do
+	pushd ./${GIT_REPOSITORY_PATH};
+	ss Get -I-Y -GL. -R -W -V"L${SOURCESAFE_LABEL}" -Y${SSUSENAMEPASS} ${SOURCESAFE_SUB_TREE}/${SOURCESAFE_PROJECT};
+	popd
+	export SSVERFILEISNEW=$(git status -u | grep -i ssver.bat | grep -v modified);
+	export SSVERFILENAME=$(find ${GIT_REPOSITORY_PATH} -type f | grep -i "ssver.bat")
+	 
+	echo "SSVERFILEISNEW = ${SSVERFILEISNEW}"
+	echo "SSVERFILENAME = ${SSVERFILENAME}"
+ #   read Input	
+	if [ "${SSVERFILEISNEW}" != "" ]; then
+		~/dev-newton/scripts/ImportSourceSafeIntoGit-BuildSSVER.sh ${SSVERFILENAME} ${GIT_REPOSITORY_HOME} | tee -a /tmp/log.log;
+	else
+		~/dev-newton/scripts/ImportSourceSafeIntoGit-BuildSSVER.byDiff.sh ${SSVERFILENAME} ${GIT_REPOSITORY_HOME} | tee -a /tmp/log.log;
+	fi
+#done
 git checkout -f ${GIT_BRANCH_NAME}
 
 
-~/dev-newton/scripts/DoImportSourceSafeFilesAndCommit.sh $@ | tee -a /tmp/log.log;
-export SSVERFILENAME=$(find ${GIT_REPOSITORY_PATH} -type f | grep -i "ssver.bat")
- 
-~/dev-newton/scripts/ImportSourceSafeIntoGit-BuildSSVER.sh ${GIT_REPOSITORY_HOME}/${SSVERFILENAME} ${GIT_REPOSITORY_HOME} | tee -a /tmp/log.log;
+
 /tmp/import.ssver.sh  | tee -a /tmp/log.log;
-git tag -f -a -m "${GIT_TAG_NAME}" "${GIT_TAG_NAME}" | tee -a /tmp/log.log;
+
+~/dev-newton/scripts/DoImportSourceSafeFilesAndCommit.sh $@ | tee -a /tmp/log.log;
+

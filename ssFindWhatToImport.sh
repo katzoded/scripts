@@ -1,4 +1,5 @@
 export GIT_REPOSITORY_PATH=${1}
+export SOURCESAFE_DB=${2}
 export SSFINDIMPORTLINE=""
 
 if [ "${IMPORT_DATA_FILE}" != "" ]; then
@@ -11,12 +12,14 @@ fi
 for var in "$@"
 do
     if [ ${GIT_REPOSITORY_PATH} != ${var} ]; then
-        export var=$(echo ${var} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "TrilliumInfraStructure" "TrilliumInfra");
+        export var=$(echo ${var} \
+		| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "TrilliumInfraStructure" "TrilliumInfra" \
+		| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\." "\\\\.");
         export  SSFINDIMPORTLINE="${SSFINDIMPORTLINE} | grep -i ${var}"
     fi
 done
 
-export IMPORTED_DATA=$(echo "cat ${IMPORT_DATA_FILE} ${SSFINDIMPORTLINE}" | sh | sort | uniq)
+export IMPORTED_DATA=$(echo "cat ${IMPORT_DATA_FILE}.${SOURCESAFE_DB} ${SSFINDIMPORTLINE}" | sh | sort | uniq)
 export NUMBEROF_IMPORTLINES=$(echo "${IMPORTED_DATA}" | sort | uniq | wc | awk '{print $1}');
 export LINESTOIMPORTSSVER=$(echo "cat /tmp/workSSver.bat.data ${SSFINDIMPORTLINE}");
 
@@ -41,8 +44,15 @@ elif [ ${NUMBEROF_IMPORTLINES} -gt 1 ]; then
 	for var in "$@"
 	do
 		if [ ${GIT_REPOSITORY_PATH} != ${var} ]; then
-			export var=$(echo ${var} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "TrilliumInfraStructure" "TrilliumInfra");
+			export ISVARPROTOCOLS=$(echo ${var} | grep -i protocols \
+			| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "Protocols_" );
+			export var=$(echo ${var} \
+			| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "TrilliumInfraStructure" "TrilliumInfra"\
+			| ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh "\." "\\\\.");
 			export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh ${var}"
+			if [ "${ISVARPROTOCOLS}" != "" ]; then
+				export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh ${ISVARPROTOCOLS}"
+			fi
 		fi
 	done
 	export  SSCHECKFORACCURACY="${SSCHECKFORACCURACY} | ~/dev-newton/scripts/CaseInsensitiveNoFileCreationIReplaceFileList.sh P85X_"
@@ -72,7 +82,7 @@ found ${NUMBEROF_IMPORTLINES} lines
 		echo "automatic accuracy found:
 ${IMPORTED_DATA}"
 	else
-		echo "please choose the line number to import from ${IMPORT_DATA_FILE} or [s]kip this version or [i]gnore this dependency"
+		echo "please choose the line number to import from ${IMPORT_DATA_FILE}.${SOURCESAFE_DB} or [s]kip this version or [i]gnore this dependency"
 		read input
 		export IMPORTED_DATA=${input}
 	fi
