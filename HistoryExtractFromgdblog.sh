@@ -23,7 +23,7 @@ cat ${1}.ph1 \
 
 
 
-sort ${1}.ph3 > ${1}.sort
+sort ${1}.ph3 | uniq > ${1}.sort
 cat ${1}.sort | grep -v SetRealTimeReportForAccess > ${1}.sort.NoCacheManager
 
 

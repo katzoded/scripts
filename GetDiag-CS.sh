@@ -23,5 +23,5 @@ fi
 
 
 
-~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "pkill -9 diagmgr; cd /opt/IPVRdiagmgr/; ./goxml.param ${XML_FILENAME} | grep somesession | xargs tar zcvf /tmp/Diag.tar & sleep ${TIMEOUT}; kill -9 \$(pgrep diagmgr); echo waiting; sleep 10s; echo zipping; gzip -f /tmp/Diag.tar" "${DIRNAME}/Diag.tar.gz /tmp"  "${SSH_USER}";
+~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "pkill -9 diagmgr; cd /opt/IPVRdiagmgr/; ./goxml.param ${XML_FILENAME} | grep somesession | xargs tar cvf /tmp/Diag.tar & sleep ${TIMEOUT}; kill -9 \$(pgrep diagmgr); echo waiting; sleep 10s; echo zipping; gzip -f /tmp/Diag.tar" "${DIRNAME}/Diag.tar.gz /tmp"  "${SSH_USER}";
 
