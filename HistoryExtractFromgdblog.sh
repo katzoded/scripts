@@ -21,9 +21,20 @@ cat ${1}.ph1 \
 
 ~/dev-newton/scripts/ReplaceFileList.sh "^\([0-9]*\) \([0-9]*\)\b" "\1.\2" ${1}.ph2 > ${1}.ph3
 
+#beautify the Cache Rescords to have a string of Identity
+cat ${1}.ph3 \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\([0-9]*,)" -numtohexreg ".*\([0-9]*,([0-9]*),([0-9]*),([0-9]*)\)" -suffixreg "(\))" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\([0-9]*,)" -hextocharreg ".*\([0-9]*,([0-9a-zA-Z]*)\)" -suffixreg "(\))" \
+> ${1}.ph4
+
+#beautify the RV Callbacks with App SessionId and App CallLeg ID
+cat ${1}.ph4 \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::FormatCallLeg.*" -prefixreg "(.*\([0-9]*,)" -numtohexreg ".*\([0-9]*,([0-9]*)," -suffixreg ".*\([0-9]*,[0-9]*(,[0-9]*,[0-9]*\))" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::FormatCallLeg.*" -prefixreg "(.*\([0-9]*,)" -hextoword32reg ".*\([0-9]*,([0-9a-zA-Z]*)," -suffixreg ".*\([0-9]*,[0-9a-zA-Z]*(,[0-9]*,[0-9]*\))" \
+> ${1}.ph5
 
 
-sort ${1}.ph3 | uniq > ${1}.sort
+sort ${1}.ph5 | uniq > ${1}.sort
 cat ${1}.sort | grep -v SetRealTimeReportForAccess > ${1}.sort.NoCacheManager
 
 
