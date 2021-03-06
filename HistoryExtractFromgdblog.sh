@@ -29,8 +29,8 @@ cat ${1}.ph3 \
 
 #beautify the RV Callbacks with App SessionId and App CallLeg ID
 cat ${1}.ph4 \
-| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::FormatCallLeg.*" -prefixreg "(.*\([0-9]*,)" -numtohexreg ".*\([0-9]*,([0-9]*)," -suffixreg ".*\([0-9]*,[0-9]*(,[0-9]*,[0-9]*\))" \
-| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::FormatCallLeg.*" -prefixreg "(.*\([0-9]*,)" -hextoword32reg ".*\([0-9]*,([0-9a-zA-Z]*)," -suffixreg ".*\([0-9]*,[0-9a-zA-Z]*(,[0-9]*,[0-9]*\))" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::Format.*" -prefixreg "(.*\([0-9]*,)" -numtohexreg ".*\([0-9]*,([0-9]*)," -suffixreg ".*\([0-9]*,[0-9]*(,[0-9]*,[0-9]*\))" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*SIPCallLeg::Format.*" -prefixreg "(.*\([0-9]*,)" -hextoword32reg ".*\([0-9]*,([0-9a-zA-Z]*)," -suffixreg ".*\([0-9]*,[0-9a-zA-Z]*(,[0-9]*,[0-9]*\))" \
 > ${1}.ph5
 
 
