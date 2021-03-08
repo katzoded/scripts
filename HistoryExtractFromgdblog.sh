@@ -25,6 +25,8 @@ cat ${1}.ph1 \
 cat ${1}.ph3 \
 | ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\([0-9]*,)" -numtohexreg ".*\([0-9]*,([0-9]*),([0-9]*),([0-9]*)\)" -suffixreg "(\))" \
 | ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\([0-9]*,)" -hextocharreg ".*\([0-9]*,([0-9a-zA-Z]*)\)" -suffixreg "(\))" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\()" -numtohexreg ".*\(([0-9]*)," -suffixreg "\([0-9]*(,.*)" \
+| ~/dev-newton/scripts/NumberToHex.pl -g ".*FormatCacheManagerChangeHistoryRecord.*" -prefixreg "(.*\()" -hextoword32reg ".*\(([0-9a-zA-Z]*)," -suffixreg "\([0-9a-zA-Z]*(,.*)" \
 > ${1}.ph4
 
 #beautify the RV Callbacks with App SessionId and App CallLeg ID

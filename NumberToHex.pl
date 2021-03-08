@@ -170,19 +170,30 @@ sub CheckAndAddToResult
                 my $hexDigit = "";
                 my $Count = 0;
                 my $str;
+                my $StopAtCount = length($_) % 8;
+                
+                
                 for my $c (split //, $_)
                 {
                     $Count = $Count + 1;
                     $hexDigit = $hexDigit . $c;
                     
-                    if($Count == 8)
+                    if($Count == $StopAtCount)
                     {
+                        $StopAtCount = 8;
                         $str = hex($hexDigit);
                         $Count = 0;
                         $hexDigit	= "";
                         $CompleteStr = $CompleteStr . $str . " ";
                     }
                 }
+#                if($Count != 0)
+#                {
+#                    $str = hex($hexDigit);
+#                    $Count = 0;
+#                    $hexDigit	= "";
+#                    $CompleteStr = $CompleteStr . $str . " ";
+#                }
             }
         }
         @matches = ( $line =~ /$InSuffixReg/ );
