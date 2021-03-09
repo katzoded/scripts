@@ -170,8 +170,12 @@ sub CheckAndAddToResult
                 my $hexDigit = "";
                 my $Count = 0;
                 my $str;
-                my $StopAtCount = 8 - (length($_) % 8);
+                my $StopAtCount = (length($_) % 8);
                 
+                if($StopAtCount == 0)
+                {
+                    $StopAtCount = 8;
+                }
                 
                 for my $c (split //, $_)
                 {
