@@ -25,10 +25,60 @@ my $InGrepVFilter=0;
 my $InFileName;
 my $InNumReg = "";
 my $numtohexreg = "";
-my $hextoword32reg = "";
+my $hextowordreg = 0;
+my $hextobitmask = "";
 my $hextocharreg = "";
 my $InPrefixReg = "";
 my $InSuffixReg = "";
+
+sub dec2bin {
+    my $str = unpack("B32", pack("N", shift));
+    $str =~ s/^0+(?=\d)//;   # otherwise you'll get leading zeros
+    return $str;
+}
+
+sub bin2dec {
+    return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
+}
+
+sub GetBinaryValueFromHex
+{
+    my $hex = shift;
+    my $AlignToByte = shift;
+    my $HexAllign = (length($hex) % $AlignToByte);
+    my @HexDigit = split("", $hex);
+    my $BinaryString = "";
+    
+    if($HexAllign != 0)
+    {
+        for (my $i = 0; $i < ($AlignToByte - $HexAllign); $i=$i+1)
+        {
+            $BinaryString = $BinaryString . sprintf("%04b", 0);
+        }
+    }
+    for (my $i = 0; $i < scalar(@HexDigit); $i=$i+1)
+    {
+        $BinaryString = $BinaryString . sprintf("%04b", hex($HexDigit[$i]));
+    }
+    return $BinaryString;
+    
+}
+
+sub GetIntValueFromBinaryStr
+{
+    my $BinaryString=shift;
+    my $CurrentBit=shift;
+    my $NumOfBits=shift;
+    my $binaryNum = "";
+        
+    my @binaryStream = split("", $BinaryString);
+             
+    for (my $i = $CurrentBit; $i < $CurrentBit + $NumOfBits; $i=$i+1)
+    {
+        $binaryNum = $binaryNum . $binaryStream[$i];
+    }
+    return bin2dec($binaryNum);
+}
 
 sub LoadParams
 {
@@ -75,11 +125,16 @@ sub LoadParams
                 $hextocharreg = $ARGV[$i + 1];
                 $InNumReg = $hextocharreg;
             }
-            elsif($ARGV[$i] eq "-hextoword32reg")
+            elsif($ARGV[$i] eq "-hextowordreg")
             {
-                $hextoword32reg = $ARGV[$i + 1];
-                $InNumReg = $hextoword32reg;
-           }
+                $InNumReg = $ARGV[$i + 1];
+                $hextowordreg = $ARGV[$i + 2];
+            }
+            elsif($ARGV[$i] eq "-hextobitmaskreg")
+            {
+                $InNumReg = $ARGV[$i + 1];
+                $hextobitmask = $ARGV[$i + 2];
+            }
             elsif($ARGV[$i] eq "-prefixreg")
             {
                 $InPrefixReg = $ARGV[$i + 1];
@@ -98,7 +153,7 @@ sub printHelp
     print STDOUT "\n-numreg \"RegEx for converting the Number to Hex";
     print STDOUT "\n-numtohexreg \"RegEx for converting the Number to Hex";
     print STDOUT "\n-hextocharreg \"RegEx for converting the Number to Hex";
-    print STDOUT "\n-hextoword32reg \"RegEx for converting the Number to Hex";
+    print STDOUT "\n-hextowordreg \"RegEx for converting the Number to Hex nummOfBytes";
     print STDOUT "\n-g \"RegEx for grepping the multiline\" whatever passes this RegEx will be in output";
     print STDOUT "\n-gv \"RegEx for grepping the multiline\" whatever passes this RegEx will NOT be in output";
     print STDOUT "\n-f \"Input file name\" - this param is not mandatory, STDIN can be used as input ";
@@ -165,39 +220,31 @@ sub CheckAndAddToResult
                     }
                 }
             }
-            elsif($hextoword32reg ne "")
+            elsif($hextowordreg != 0)
             {
-                my $hexDigit = "";
-                my $Count = 0;
+                my $BinaryStr = GetBinaryValueFromHex($_, 16);
+                my $BinaryStrLen = length($BinaryStr);
                 my $str;
-                my $StopAtCount = (length($_) % 8);
-                
-                if($StopAtCount == 0)
+
+                for (my $i = 0; $i < $BinaryStrLen; $i=$i+($hextowordreg * 8))
                 {
-                    $StopAtCount = 8;
+                    $str = GetIntValueFromBinaryStr($BinaryStr, $i, ($hextowordreg * 8));
+                    $CompleteStr = $CompleteStr . $str . " ";
                 }
-                
-                for my $c (split //, $_)
+            }
+            elsif($hextobitmask ne "")
+            {
+                my $BinaryStr = GetBinaryValueFromHex($_, 16);
+                my $CurrPos = 0;
+                for my $BitmaskDescriptors (split / /, $hextobitmask)
                 {
-                    $Count = $Count + 1;
-                    $hexDigit = $hexDigit . $c;
+                    my @BitmaskDescriptor = ( $BitmaskDescriptors =~ /(.*)=(.*)/ );
+                    my $str;
                     
-                    if($Count == $StopAtCount)
-                    {
-                        $StopAtCount = 8;
-                        $str = hex($hexDigit);
-                        $Count = 0;
-                        $hexDigit	= "";
-                        $CompleteStr = $CompleteStr . $str . " ";
-                    }
+                    $str = " [" . $BitmaskDescriptor[0] . "] " . GetIntValueFromBinaryStr($BinaryStr, $CurrPos, $BitmaskDescriptor[1]);
+                    $CompleteStr = $CompleteStr . $str . " ";
+                    $CurrPos = $CurrPos + $BitmaskDescriptor[1];
                 }
-#                if($Count != 0)
-#                {
-#                    $str = hex($hexDigit);
-#                    $Count = 0;
-#                    $hexDigit	= "";
-#                    $CompleteStr = $CompleteStr . $str . " ";
-#                }
             }
         }
         @matches = ( $line =~ /$InSuffixReg/ );
