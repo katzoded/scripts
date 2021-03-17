@@ -71,7 +71,6 @@ Session-Expires: 1800;refresher=uac
     To: sut <sip:[field1]@[remote_ip]:[remote_port]>
    Call-ID: [call_id]
    Contact: <sip:[local_ip]:[local_port];transport=[transport];Dpt=eaea-200;Hpt=8e68_16;CxtId=4;TRC=ffffffff-ffffffff>;video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
-Date: Thu, 28 Jan 2021 10:32:45 HKG
 CSeq: 1 INVITE
 X-Call-Record: both
 Max-Forwards: 62
