@@ -19,14 +19,13 @@ export FILTER=".*SIP_Utils\.cc\.75|.*########## SIPMessage ##########"
 #cat ${FOLDERNAME}/Messages.log.updated.1 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\[${DATE_FORMAT}\]" "\n"|  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\\\n\\\\n" "\\\\n" > ${FOLDERNAME}/Messages.flow.log;
 
 
-
 ##### Grep All messages #############
 if [ "${EXTRA_FILTER}" != "" ]; then
-    export FILTER=".*SIP_Utils\.cc\.75|.*########## SIPMessage ##########|${EXTRA_FILTER}";
+    export FILTER=${FILTER}+"|${EXTRA_FILTER}";
 fi
 
 #cat ${FILENAME} | ~/dev-newton/scripts/grep.multiline.pl "\[${DATE_FORMAT}]" ".*PIN HOLE ##########|.*SIP_Utils\.cc\.75|.*########## SIPMessage ##########" > ${FOLDERNAME}/Messages.pinholes;
-cat ${FILENAME} | ~/dev-newton/scripts/grep.multiline.pl "\[${DATE_FORMAT}]" "${FILTER}" > ${FOLDERNAME}/Messages.log.all;
+cat ${FILENAME} | ~/dev-newton/scripts/grep.multiline.pl -ss "\[${DATE_FORMAT}]" -g "${FILTER}" > ${FOLDERNAME}/Messages.log.all;
 cat ${FOLDERNAME}/Messages.log.all \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^\[\(${DATE_FORMAT}\)\].*REceived message is  ########## SIPMessage ##########" "\[\1\] NOTE_OVER_RECEIVED \\n\1"  \
 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^\[\(${DATE_FORMAT}\)\].*B2BCallLeg::MsgToSendEvent.*########## SIPMessage ##########" "\[\1\] NOTE_OVER_SENT \\n\1" \
@@ -73,4 +72,5 @@ cat ${FOLDERNAME}/Messages.log.all.updated | ~/dev-newton/scripts/search.and.rep
 cat ${FOLDERNAME}/Messages.log.all.updated.1 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\[${DATE_FORMAT}\]" "\n"|  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\\\n\\\\n" "\\\\n" > ${FOLDERNAME}/Messages.all.flow.log;
 
 grep -v " OPTIONS" ${FOLDERNAME}/Messages.all.flow.log > ${FOLDERNAME}/Messages.all.flow.log.nooptions
+grep -v " REGISTER" ${FOLDERNAME}/Messages.all.flow.log.nooptions > ${FOLDERNAME}/Messages.all.flow.log.nooptions.noregister
 

@@ -168,7 +168,7 @@ while ($line = <INFILE>)
     	$currentEntityNAME2="";
 		$lastTime=$1;
 		$lastLineNumber=$lineNumber;
-    	if ($line =~ /^\[.*\].*, ([a-zA-Z_]*)[-]+(\d*)->([a-zA-Z_]*)[-]+(\d*):(.*)\n/)
+    	if ($line =~ /^\[.*\].*, ([a-zA-Z0-9_]*)[-]+(\d*)->([a-zA-Z0-9_]*)[-]+(\d*):(.*)\n/)
     	{
 #			print STDOUT "$1   $2    $3    $4\n";
     	    $currentEntityNAME=$3;
@@ -179,7 +179,7 @@ while ($line = <INFILE>)
         	$lastAggregatedline=$lineData;
             $lastAggregatedline =~ s/\r|\n/\\n/g;
     	}
-    	if ($line =~ /^\[.*\].*, note over ([a-zA-Z_]*)[-]+(\d*)#([a-z]*):(.*)\n/)
+    	if ($line =~ /^\[.*\].*, note over ([a-zA-Z0-9_]*)[-]+(\d*)#([a-z]*):(.*)\n/)
     	{
 			#print STDOUT "$1   $2    $3    $4\n";
     	    $currentEntityNAME=$1;

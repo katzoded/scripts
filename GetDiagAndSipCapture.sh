@@ -32,7 +32,7 @@ fi
 export SIP_CAPTURE_NAME_BEFORE_CALL=$(${SSH_PASS_COMMAND} ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | awk  '{print \$9}' | sort | tail -1");
 echo "First SIP Capture file to download ${SIP_CAPTURE_NAME_BEFORE_CALL}";
 
-~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}" "${SSH_PASS}";
+~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir -p ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}" "${SSH_PASS}";
 
 
 
@@ -46,7 +46,7 @@ if [ "${RUN_ANALYSIS}" == "y" ]; then
 
    echo "SCS_FILE_NAME = ${SCS_FILE_NAME}"
 
-   mkdir ${SCS_FILE_NAME}.dir
+   mkdir -p ${SCS_FILE_NAME}.dir
 
    mv ${SCS_FILE_NAME} ${SCS_FILE_NAME}.dir
 

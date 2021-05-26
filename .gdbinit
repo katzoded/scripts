@@ -26,7 +26,7 @@ set max-value-size unlimited
     if(HistoryLoggingManager::m_sLoggingManager->m_ppArray[$ThreadIter])
         print "Thread "
         print $ThreadIter
-        print "_____________________"
+        print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
         pHistArray2 HistoryLoggingManager::m_sLoggingManager->m_ppArray[$ThreadIter]
     end
     set var $ThreadIter = $ThreadIter + 1
@@ -42,14 +42,14 @@ define pHistArray2
   if($Array->m_pHistoryArray->m_ArrayExceeded == 0)
     set var $Max = $Array->m_pHistoryArray->m_CurrentPos
   end
-  while ($n<$Max && $Array->m_pHistoryArray->m_Array[$n].m_TimeOccur != 0)
-    p $Array->m_pHistoryArray->m_Array[$n]
+  while ($n<$Max && $Array->m_pHistoryArray->m_pArray[$n].m_TimeOccur != 0)
+    p $Array->m_pHistoryArray->m_pArray[$n]
     set var $n = $n + 1
   end
 end
 
 define pHistArrayForAllThreads
-#set max-value-size unlimited
+  set max-value-size unlimited
   set var $ThreadIter = $arg0
   set var $ThreadsNum = $arg1
   while ($ThreadIter <= $ThreadsNum)
@@ -63,14 +63,14 @@ end
 
 
 define pHistArray
-#  set max-value-size unlimited
+  set max-value-size unlimited
   set var $n = 0
   set var $Max = HISTORYLOG_g_Thread->m_pHistoryArray->m_ArrayAllocSize
   if(HISTORYLOG_g_Thread->m_pHistoryArray->m_ArrayExceeded == 0)
     set var $Max = HISTORYLOG_g_Thread->m_pHistoryArray->m_CurrentPos
   end
-  while ($n<$Max && HISTORYLOG_g_Thread->m_pHistoryArray->m_Array[$n].m_TimeOccur != 0)
-    p HISTORYLOG_g_Thread->m_pHistoryArray->m_Array[$n]
+  while ($n<$Max && HISTORYLOG_g_Thread->m_pHistoryArray->m_pArray[$n].m_TimeOccur != 0)
+    p HISTORYLOG_g_Thread->m_pHistoryArray->m_pArray[$n]
     set var $n = $n + 1
   end
 end
