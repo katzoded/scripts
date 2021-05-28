@@ -159,9 +159,15 @@ a=des:qos none local sendrecv
                 <ereg regexp=".*" search_in="hdr" header="From:" assign_to="from" />
                 <ereg regexp=".*" search_in="hdr" header="CSeq:" assign_to="2" />
                 <ereg regexp=".*" search_in="hdr" header="RSeq:" assign_to="1" />
+                <ereg regexp=".*" search_in="hdr" header="Content-Type:" assign_to="HasContType" />
+                <test assign_to="ContTypeExist" variable="HasContType" compare="equal" value=""/>
+            </action>
+            <nop next="ContTypeExist" test="SendAck"/> 
+            <action>
                 <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
                 <assignstr assign_to="Unused" value="Unused" />
             </action>
+            
     </recv>
 
     <recv response="487" optional="true" next="1"/>
@@ -169,12 +175,18 @@ a=des:qos none local sendrecv
 
     <recv response="200" >
             <action>
-                 <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
+                <ereg regexp=".*" search_in="hdr" header="Content-Type:" assign_to="HasContType" />
+                <test assign_to="ContTypeExist" variable="HasContType" compare="equal" value=""/>
+            </action>
+            <nop next="ContTypeExist" test="SendAck"/> 
+            <action>
+                <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
                 <assignstr assign_to="Unused" value="Unused" />
             </action>
     </recv>
 
 
+ <label id="SendAck"/>
 
     <send  >
     <![CDATA[
