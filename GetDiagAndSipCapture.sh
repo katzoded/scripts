@@ -32,7 +32,7 @@ fi
 export SIP_CAPTURE_NAME_BEFORE_CALL=$(${SSH_PASS_COMMAND} ssh ${SSH_USER}@${HOST_IP} "ls -ltr /archive/SIP_capture/ | awk  '{print \$9}' | sort | tail -1");
 echo "First SIP Capture file to download ${SIP_CAPTURE_NAME_BEFORE_CALL}";
 
-~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};pkill -9 diagmgr; mkdir -p ${LOGPATH}; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH}; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}" "${SSH_PASS}";
+~/dev-newton/scripts/StartSSHCommandAndUpload.sh "${HOST_IP}" "rm -rf ${LOGPATH};rm -rf ${LOGPATH}Stop;pkill -9 diagmgr; mkdir -p ${LOGPATH}; mkdir -p ${LOGPATH}Stop; /opt/bnet/tools/xmldiagmgr config.xml.sbc.sip ${LOGPATH} & sleep ${TIMEOUT}; pkill -9 diagmgr; /opt/bnet/tools/xmldiagmgr config.stop.xml.sbc.sip ${LOGPATH}Stop & sleep 5s; pkill -9 diagmgr; tar cvf ${LOGPATH}Diag.tar ${LOGPATH} ${LOGPATH}Stop; gzip -f ${LOGPATH}Diag.tar; rm -rf ${LOGPATH};" "${LOGPATH}Diag.tar.gz ${LOGPATH}Diag.tar.gz" "${SSH_USER}" "${SSH_PASS}";
 
 
 
@@ -40,7 +40,8 @@ if [ "${RUN_ANALYSIS}" == "y" ]; then
 
    pushd /
 
-   export SCS_FILE_NAME=\/$(tar xvf ${LOGPATH}Diag.tar.gz | grep SCS);
+   export SCS_FILE_NAME=\/$(tar xvf ${LOGPATH}Diag.tar.gz | grep SCS | grep -v ${BASENAME}Stop);
+   export SCS_STOP_FILE_NAME=\/$(tar xvf ${LOGPATH}Diag.tar.gz | grep SCS | grep ${BASENAME}Stop);
 
    popd
 
@@ -49,6 +50,7 @@ if [ "${RUN_ANALYSIS}" == "y" ]; then
    mkdir -p ${SCS_FILE_NAME}.dir
 
    mv ${SCS_FILE_NAME} ${SCS_FILE_NAME}.dir
+   mv ${SCS_STOP_FILE_NAME} ${SCS_FILE_NAME}.dir
 
    echo ${SCS_FILE_NAME}.dir/$(basename ${SCS_FILE_NAME}) | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\(.*\)" "~/dev-newton/scripts/ExtractMessagesFromBnetLog.sh \1 '.*PIN HOLE ##########'; ~/dev-newton/scripts/CreateBnetFlowDiag.pl \1" | sh;
 
