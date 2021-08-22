@@ -91,7 +91,7 @@ sub LoadParams
 
 sub printHelp
 {
-    print STDOUT "\n-h Print this help";
+    print STDOUT "\n--help Print this help";
     print STDOUT "\n-ss \"RegEx for Start Separator\"";
     print STDOUT "\n-es \"RegEx for End Separator\" (in case -es doesn't exist only -ss will be used)";
     print STDOUT "\n-sp \"RegEx for sort param\" whatever passes this RegEx will be in output";
@@ -99,6 +99,7 @@ sub printHelp
     print STDOUT "\n-u uniq";
     print STDOUT "\n-c count";
     print STDOUT "\n-h human sort";
+    print STDOUT "\nExample for Date sorting DATE_FORMAT=\"[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]*:[0-9]*\" \n -ss \"^\[\${DATE_FORMAT}\]\" -sp  \"^\[\${DATE_FORMAT}\]\"";
     exit;
 }
 

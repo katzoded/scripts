@@ -1,0 +1,18 @@
+sipp: The following events occured:
+2021-03-10	10:00:39:865	1615399239.865680: Failed regexp match: looking in 'SIP/2.0 183 Session Progress
+From: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+To: sut <sip:1235555@127.0.0.1:5060>;tag=c3774c8-0-13c4-50022-8a8b-2b230051-8a8b
+Call-ID: 1-1549@127.0.0.1
+CSeq: 1 INVITE
+Date: Wed, 10 Mar 2021 18:00:39 GMT
+Server: I-Gate 4000 Edge SIP GW (,,)
+Require: 100rel
+Via: SIP/2.0/UDP 127.0.0.1:5064;branch=z9hG4bK-1549-1--1
+RSeq: 375
+Contact: <sip:1235555@127.0.0.1:5060;user=phone>
+Content-Type: application/ISUP;version=itu-t92+;base=itu-92+
+Content-Length: 17
+
+	!€', with regexp 'm=audio [0-9]* RTP/AVP ([0-9]*)'.
+2021-03-10	10:00:43:310	1615399243.310537: Test Values for UseCodec='18' are IsCodecG729=true,, IsCodecG711a=false,1.000000.
+2021-03-10	10:00:43:311	1615399243.311487: Can't create raw socket (need to run as root?).

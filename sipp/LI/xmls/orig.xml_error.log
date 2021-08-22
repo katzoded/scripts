@@ -1,0 +1,25 @@
+sipp: The following events occured:
+2021-01-14	10:39:09:446	1610649549.446966: Aborting call on unexpected message for Call-Id '1-1540@127.0.0.1': while expecting '100' (index 1), received 'UPDATE sip:127.0.0.1:5064;transport=UDP;Dpt=eaea-200;Hpt=8e68_16;CxtId=4;TRC=ffffffff-ffffffff SIP/2.0
+From: sut <sip:1235555@127.0.0.1:5060>;tag=b4452c8-0-13c4-50022-1abb6-1ff6afd4-1abb6
+To: ua1 <sip:447700900000@127.0.0.1:5064>;tag=1
+Call-ID: 1-1540@127.0.0.1
+CSeq: 1 UPDATE
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-1abb7-686c373-23256c89
+Date: Thu, 14 Jan 2021 18:39:09 GMT
+User-Agent: 
+Supported: timer
+Max-Forwards: 70
+Contact: <sip:1235555@127.0.0.1:5060;user=phone>
+Session-Expires: 1800;refresher=uas
+Min-SE: 900
+Content-Type: application/sdp
+Content-Length: 162
+
+v=0
+o=HPE-AS 1988469054 41213746593 IN IP4 10.170.101.121
+s=-
+c=IN IP4 255.255.255.255
+m=audio 50000 RTP/AVP 0 8
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+'.

@@ -1,0 +1,6 @@
+sipp: The following events occured:
+2021-03-10	10:00:39:672	1615399239.672404: Call-Id: c4f2c38-0-13c4-50022-8a8b-43a8f7b4-8a8b, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-03-10	10:00:40:889	1615399240.889623: Call-Id: c4f2c38-0-13c4-50022-8a8b-43a8f7b4-8a8b, receive timeout on message Basic UAS responder:14, jumping to label 15.
+2021-03-10	10:00:41:907	1615399241.907237: Call-Id: c4f2c38-0-13c4-50022-8a8b-43a8f7b4-8a8b, receive timeout on message Basic UAS responder:22, jumping to label 23.
+2021-03-10	10:00:43:310	1615399243.310935: Test Values for UseCodec='18' are IsCodecG729=true,, IsCodecG711a=false,1.000000.
+2021-03-10	10:00:43:314	1615399243.314540: Can't create raw socket (need to run as root?).

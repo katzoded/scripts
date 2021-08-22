@@ -1,0 +1,296 @@
+----------------------------------------------- 2021-01-13 09:38:15:689.416
+UDP message received [785] bytes :
+
+INVITE tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 INVITE
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+Supported: 100rel,timer
+User-Agent: I-Gate 4000 Edge SIP GW (,,)
+Max-Forwards: 70
+Allow: INVITE,PRACK,UPDATE,ACK,CANCEL,BYE,INFO,OPTIONS
+Date: Wed, 13 Jan 2021 17:38:15 GMT
+Contact: <sip:123457700900002@127.0.0.1:5060;user=phone>
+Session-Expires: 1800;refresher=uac
+Min-SE: 120
+Content-Type: application/sdp
+Content-Length: 177
+
+v=0
+o=HPE-AS 4217 2 IN IP4 10.170.101.7
+s=-
+c=IN IP4 255.255.255.255
+t=0 0
+m=audio 50004 RTP/AVP 0 8
+c=IN IP4 255.255.255.255
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-13 09:38:15:690.194
+UDP message sent (323 bytes):
+
+SIP/2.0 100 trying
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 INVITE
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length: 0
+
+
+UDP message voluntary lost (while sending).----------------------------------------------- 2021-01-13 09:38:16:321.435
+UDP message sent (743 bytes):
+
+SIP/2.0 183 Call Progress
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1-forked
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 INVITE
+RSeq: 100
+Require: 100rel
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Type: application/sdp
+Allow: REGISTER, REFER, NOTIFY, SUBSCRIBE, UPDATE, PRACK, INFO, INVITE, ACK, OPTIONS, CANCEL, BYE
+Supported: timer, histinfo, 100rel, replaces, precondition, histinfo, record-aware
+Content-Length:   154
+
+v=0
+o=HPE-AS 1988469054 4213746593 IN IP4 10.170.101.121
+s=-
+c=IN IP4 127.0.0.1
+m=audio 6000 RTP/AVP 0 8
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-13 09:38:16:398.894
+UDP message received [356] bytes :
+
+PRACK sip:127.0.0.1:5065;transport=UDP SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1-forked
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 2 PRACK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf3-128aed3-474d676b
+RAck: 100 1 INVITE
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:38:16:399.004
+UDP message sent (331 bytes):
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf3-128aed3-474d676b
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1-forked
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 2 PRACK
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:38:16:404.272
+UDP message received [307] bytes :
+
+CANCEL tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 CANCEL
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:38:16:404.376
+UDP message sent (342 bytes):
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1022SIPpTag051
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 CANCEL
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length:     0
+
+
+----------------------------------------------- 2021-01-13 09:38:16:404.429
+UDP message sent (358 bytes):
+
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1022SIPpTag051
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 INVITE
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length:     0
+
+
+----------------------------------------------- 2021-01-13 09:38:16:405.798
+UDP message received [381] bytes :
+
+ACK tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffe448-0-13c4-50022-4bf2-29745578-4bf2
+To: <tel:1234535552>;tag=1022SIPpTag051
+Call-ID: c18f858-0-13c4-50022-4bf2-57ad0732-4bf2
+CSeq: 1 ACK
+Via: SIP/2.0/UDP 172.29.2.153:5060;branch=z9hG4bK-4bf2-128ac0d-6d295aa1
+Max-Forwards: 70
+Contact: <sip:123457700900002@127.0.0.1:5060;user=phone>
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:243.860
+UDP message received [784] bytes :
+
+INVITE tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 INVITE
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+Supported: 100rel,timer
+User-Agent: I-Gate 4000 Edge SIP GW (,,)
+Max-Forwards: 70
+Allow: INVITE,PRACK,UPDATE,ACK,CANCEL,BYE,INFO,OPTIONS
+Date: Wed, 13 Jan 2021 17:39:52 GMT
+Contact: <sip:123457700900002@127.0.0.1:5060;user=phone>
+Session-Expires: 1800;refresher=uac
+Min-SE: 120
+Content-Type: application/sdp
+Content-Length: 177
+
+v=0
+o=HPE-AS 4217 2 IN IP4 10.170.101.7
+s=-
+c=IN IP4 255.255.255.255
+t=0 0
+m=audio 50012 RTP/AVP 0 8
+c=IN IP4 255.255.255.255
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-13 09:39:52:244.254
+UDP message sent (322 bytes):
+
+SIP/2.0 100 trying
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 INVITE
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length: 0
+
+
+UDP message voluntary lost (while sending).----------------------------------------------- 2021-01-13 09:39:52:855.689
+UDP message sent (742 bytes):
+
+SIP/2.0 183 Call Progress
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=2-forked
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 INVITE
+RSeq: 100
+Require: 100rel
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Type: application/sdp
+Allow: REGISTER, REFER, NOTIFY, SUBSCRIBE, UPDATE, PRACK, INFO, INVITE, ACK, OPTIONS, CANCEL, BYE
+Supported: timer, histinfo, 100rel, replaces, precondition, histinfo, record-aware
+Content-Length:   154
+
+v=0
+o=HPE-AS 1988469054 4213746593 IN IP4 10.170.101.121
+s=-
+c=IN IP4 127.0.0.1
+m=audio 6004 RTP/AVP 0 8
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+
+----------------------------------------------- 2021-01-13 09:39:52:911.270
+UDP message received [355] bytes :
+
+PRACK sip:127.0.0.1:5065;transport=UDP SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=2-forked
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 2 PRACK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a27d3-61e1564a
+RAck: 100 1 INVITE
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:911.422
+UDP message sent (330 bytes):
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a27d3-61e1564a
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=2-forked
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 2 PRACK
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:915.326
+UDP message received [306] bytes :
+
+CANCEL tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 CANCEL
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+Max-Forwards: 70
+Content-Length: 0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:915.443
+UDP message sent (341 bytes):
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=1022SIPpTag052
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 CANCEL
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length:     0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:915.485
+UDP message sent (357 bytes):
+
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-4c53-12a2537-16004959
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=1022SIPpTag052
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 INVITE
+Contact: <sip:127.0.0.1:5065;transport=UDP>
+Content-Length:     0
+
+
+----------------------------------------------- 2021-01-13 09:39:52:916.633
+UDP message received [380] bytes :
+
+ACK tel:1234535552 SIP/2.0
+From: "ua1 "<tel:123457700900002>;tag=bffeec8-0-13c4-50022-4c53-1db861c3-4c53
+To: <tel:1234535552>;tag=1022SIPpTag052
+Call-ID: c18fba8-0-13c4-50022-4c53-2932bd5-4c53
+CSeq: 1 ACK
+Via: SIP/2.0/UDP 172.29.2.153:5060;branch=z9hG4bK-4c53-12a2537-16004959
+Max-Forwards: 70
+Contact: <sip:123457700900002@127.0.0.1:5060;user=phone>
+Content-Length: 0
+
+

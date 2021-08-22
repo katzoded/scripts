@@ -64,6 +64,12 @@ Session-Expires: 1800;refresher=uac
 <label id="EndPCodecSelection"/>
     
     <send >
+    
+    
+    
+    
+    
+    
     <![CDATA[
     INVITE sip:[field1]@[remote_ip]:[remote_port];user=phone SIP/2.0
     Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[$InviteBranch]
@@ -73,32 +79,44 @@ Session-Expires: 1800;refresher=uac
    Contact: <sip:[local_ip]:[local_port];transport=[transport];Dpt=eaea-200;Hpt=8e68_16;CxtId=4;TRC=ffffffff-ffffffff>;video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
 CSeq: 1 INVITE
 X-Call-Record: both
-Max-Forwards: 62
 Accept: application/sdp
 Privacy: none
 Session-Expires: 1800;refresher=uac
-Supported: 100rel,precondition,timer,record-aware
-Allow: INVITE,ACK,BYE,CANCEL,PRACK,INFO,REFER,UPDATE,OPTIONS,SUBSCRIBE,NOTIFY
-Min-SE: 900
-P-Asserted-Identity: <tel:[field0];cpc=ordinary>
+Allow: INVITE,CANCEL,BYE,ACK,REFER,UPDATE,PRACK
+Supported: timer,100rel
+Max-Forwards: 69
+User-Agent: VCS  5.11.2.2-000
+P-Asserted-Identity: <sip:92@localhost;itg=162;isp=15;user=phone>
+P-Asserted-Identity: <sip:+38761816903@BHTELECOM.BA;user=phone>
+Content-Type: multipart/mixed;boundary=vzboundary
+
+--vzboundary
 Content-Type: application/sdp
-Content-Length: [len]
 
 v=0
-o=HPE-AS 4217 2 IN IP4 10.170.101.7
+o=- 10104057 10104057 IN IP4 172.16.29.65
 s=-
 c=IN IP4 [media_ip]
 t=0 0
+a=sendrecv
 m=audio [auto_media_port+1] RTP/AVP [$UseCodec] 
 c=IN IP4 [media_ip]
-a=rtpmap:0 PCMU/8000
+b=RR:0
+b=RS:0
 a=rtpmap:8 PCMA/8000
-a=curr:qos local sendrecv 
-a=curr:qos remote sendrecv 
-a=des:qos none remote sendrecv
-a=des:qos none local sendrecv
+a=rtpmap:99 telephone-event/8000
+a=fmtp:99 0-15
+a=ptime:20
+a=maxptime:40
 
+--vzboundary
+Content-Type: application/ISUP;base=itu-92+;version=itu-t92+
+Content-Disposition: signal;handling=required
+Content-Transfer-Encoding: binary
 
+\x09\x01\x11\x02\x12\x04\x21\x06\x80\x00\x21\x53\x55\x05\x00
+
+--vzboundary--
    ]]>
     </send>
     <!--a=rtpmap:0 PCMU/8000-->
@@ -159,15 +177,9 @@ a=des:qos none local sendrecv
                 <ereg regexp=".*" search_in="hdr" header="From:" assign_to="from" />
                 <ereg regexp=".*" search_in="hdr" header="CSeq:" assign_to="2" />
                 <ereg regexp=".*" search_in="hdr" header="RSeq:" assign_to="1" />
-                <ereg regexp=".*" search_in="hdr" header="Content-Type:" assign_to="HasContType" />
-                <test assign_to="ContTypeExist" variable="HasContType" compare="equal" value=""/>
-            </action>
-            <nop next="ContTypeExist" test="SendAck"/> 
-            <action>
                 <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
                 <assignstr assign_to="Unused" value="Unused" />
             </action>
-            
     </recv>
 
     <recv response="487" optional="true" next="1"/>
@@ -175,18 +187,12 @@ a=des:qos none local sendrecv
 
     <recv response="200" >
             <action>
-                <ereg regexp=".*" search_in="hdr" header="Content-Type:" assign_to="HasContType" />
-                <test assign_to="ContTypeExist" variable="HasContType" compare="equal" value=""/>
-            </action>
-            <nop next="ContTypeExist" test="SendAck"/> 
-            <action>
-                <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
+                 <ereg regexp="m=audio [0-9]* RTP/AVP ([0-9]*)" search_in="msg"  check_it="true" assign_to="Unused,UseCodec"/>
                 <assignstr assign_to="Unused" value="Unused" />
             </action>
     </recv>
 
 
- <label id="SendAck"/>
 
     <send  >
     <![CDATA[
@@ -233,7 +239,7 @@ a=des:qos none local sendrecv
 <nop next="EndPcapPlay" /> 
  <label id="EndPcapPlay"/>
 
-<!--send >
+<send >
 <![CDATA[
 INFO sip:[field1]@[remote_ip]:[remote_port];user=phone SIP/2.0
 Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[$InviteBranch]
@@ -249,44 +255,13 @@ Content-Transfer-Encoding: binary
 \x00\x00\x13\x01\x00
    ]]>
     </send>
-<recv response="200" /-->
+    <!--a=rtpmap:0 PCMU/8000-->
+<recv response="200" />
 
 
 
  <label id="4"/>
-
-  <recv request="INVITE" timeout="10000" ontimeout="SendBYE">
-    </recv>
-<send >
-<![CDATA[
-
-SIP/2.0 200 OK
-[last_Via:]
-[last_From:]
-[last_To:]
-[last_Call-ID:]
-[last_CSeq:]
-Supported: record-aware
-Contact: <sip:[local_ip]:[local_port];transport=[transport]>
-Content-Type: application/sdp
-Content-Length: [len]
-
-v=0
-o=user1 53655765 2353687637 IN IP[local_ip_type] [local_ip]
-s=-
-c=IN IP[media_ip_type] 10.10.10.10
-t=0 0
-m=audio [auto_media_port] RTP/AVP 0 8
-a=rtpmap:0 PCMU/8000
-a=rtpmap:8 PCMA/8000
-
-    ]]>
-   </send>
-
-  <recv request="ACK" next="4">
-    </recv>
-
- <label id="SendBYE"/>
+<pause distribution="uniform" min="10000" max="10000"/>
     <send lost="0">
     <!--send lost="1"-->
     <![CDATA[
@@ -325,7 +300,6 @@ a=rtpmap:8 PCMA/8000
    ]]>
     </send>
 
-    <!--recv response="183" optional="true"-->
     <recv response="200"/>
    <nop next="WaitForResponse" chance="0.95" /> 
 

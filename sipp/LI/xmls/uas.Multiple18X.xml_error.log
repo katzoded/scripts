@@ -1,0 +1,18 @@
+sipp: The following events occured:
+2021-01-13	17:20:40:887	1610587240.887512: Call-Id: c4ddef8-0-13c4-50022-b852-6112d126-b852, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-01-13	17:21:03:910	1610587263.910662: Call-Id: c4ddef8-0-13c4-50022-b852-6112d126-b852, receive timeout on message Basic UAS responder:14, jumping to label 15.
+2021-01-13	17:21:04:436	1610587264.436664: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:21:14:455	1610587274.455935: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:21:26:066	1610587286.066254: Call-Id: c4de248-0-13c4-50022-b880-558b4327-b880, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-01-13	17:22:56:145	1610587376.145962: Call-Id: c517858-0-13c4-50022-b8da-147ea8c6-b8da, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-01-13	17:23:06:741	1610587386.741556: Call-Id: c517858-0-13c4-50022-b8da-147ea8c6-b8da, receive timeout on message Basic UAS responder:14, jumping to label 15.
+2021-01-13	17:23:07:601	1610587387.601735: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:23:17:615	1610587397.615948: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:24:34:445	1610587474.445727: Call-Id: c517ba8-0-13c4-50022-b93c-1e192dc7-b93c, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-01-13	17:24:41:980	1610587481.980623: Call-Id: c517ba8-0-13c4-50022-b93c-1e192dc7-b93c, receive timeout on message Basic UAS responder:14, jumping to label 15.
+2021-01-13	17:24:42:169	1610587482.169996: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:24:52:196	1610587492.196479: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:25:24:245	1610587524.245210: Call-Id: c517ef8-0-13c4-50022-b96e-4a22e133-b96e, receive timeout on message Basic UAS responder:4, jumping to label 5.
+2021-01-13	17:25:25:476	1610587525.476594: Call-Id: c517ef8-0-13c4-50022-b96e-4a22e133-b96e, receive timeout on message Basic UAS responder:14, jumping to label 15.
+2021-01-13	17:25:26:254	1610587526.254876: send_packets.c: sendto failed with error: Address family not supported by protocol.
+2021-01-13	17:25:36:281	1610587536.281481: send_packets.c: sendto failed with error: Address family not supported by protocol.
