@@ -19,10 +19,10 @@ define pCalllegTransitionBuf
 end
 
 define pHistArrayForAllThreads2
-set max-value-size unlimited
+#set max-value-size unlimited
   set var $ThreadIter = $arg0
-  set var $ThreadsNum = HistoryLoggingManager::m_sLoggingManager->m_ArraySize
-  while ($ThreadIter <= $ThreadsNum)
+  set var $ThreadsNum = HistoryLoggingManager::m_sLoggingManager->m_NumOfItemsInArray
+  while ($ThreadIter < $ThreadsNum)
     if(HistoryLoggingManager::m_sLoggingManager->m_ppArray[$ThreadIter])
         print "Thread "
         print $ThreadIter
@@ -35,7 +35,7 @@ end
 
 
 define pHistArray2
-  set max-value-size unlimited
+#  set max-value-size unlimited
   set var $Array = $arg0
   set var $n = 0
   set var $Max = $Array->m_pHistoryArray->m_ArrayAllocSize
@@ -49,7 +49,7 @@ define pHistArray2
 end
 
 define pHistArrayForAllThreads
-  set max-value-size unlimited
+#  set max-value-size unlimited
   set var $ThreadIter = $arg0
   set var $ThreadsNum = $arg1
   while ($ThreadIter <= $ThreadsNum)
@@ -63,7 +63,7 @@ end
 
 
 define pHistArray
-  set max-value-size unlimited
+#  set max-value-size unlimited
   set var $n = 0
   set var $Max = HISTORYLOG_g_Thread->m_pHistoryArray->m_ArrayAllocSize
   if(HISTORYLOG_g_Thread->m_pHistoryArray->m_ArrayExceeded == 0)
@@ -76,7 +76,7 @@ define pHistArray
 end
 
 define pTempHistArray
-  set max-value-size unlimited
+#  set max-value-size unlimited
   set var $n = 0
   set var $Max = HISTORYLOG_g_Thread->m_pTempHistoryArray->m_ArrayAllocSize
   if(HISTORYLOG_g_Thread->m_pTempHistoryArray->m_ArrayExceeded == 0)
@@ -89,7 +89,7 @@ define pTempHistArray
 end
 
 define pRealtimeArrayForAllThreads
-  set max-value-size unlimited
+#  set max-value-size unlimited
   set var $ThreadIter = $arg0
   set var $ThreadsNum = $arg1
   while ($ThreadIter <= $ThreadsNum)
