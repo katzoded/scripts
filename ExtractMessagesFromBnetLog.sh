@@ -14,7 +14,7 @@ export FILTER=".*SIP_Utils\.cc\.75|.*########## SIPMessage ##########"
 #xargs echo "cat ${FOLDERNAME}/Messages.log.note" | sh  | fold -w 140 > ${FOLDERNAME}/Messages.log.updated
 
 #grep -e "Call-ID:"  ${FOLDERNAME}/Messages.log.updated  | sort | uniq |  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "Call-ID:\([\ 0-9a-zA-Z\-]*\).*" '| ~/dev-newton/scripts/search.and.replace.multiline.pl \\"^\\\\[${DATE_FORMAT}\\\\]\\" \\"Call-ID:\1\\" \\"\\\\n|\\\\r\\" \\"\\\\\\\\n\\"' | 
-#xargs echo "cat ${FOLDERNAME}/Messages.log.updated" | sh > ${FOLDERNAME}/Messages.log.updated.1
+#xargs echo "cat ${FOLDER-NAME}/Messages.log.updated" | sh > ${FOLDERNAME}/Messages.log.updated.1
 
 #cat ${FOLDERNAME}/Messages.log.updated.1 | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\[${DATE_FORMAT}\]" "\n"|  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\\\\n\\\\n" "\\\\n" > ${FOLDERNAME}/Messages.flow.log;
 

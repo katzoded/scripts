@@ -1,4 +1,5 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
+
 
 use Data::Dumper;
 use strict;
@@ -21,15 +22,78 @@ my $PassesUserFilter=0;
 my $UserFilter="";
 my $UserFilterFileName;
 my $FoundCount = 0;
-my $FoundCountNonCmi = 0;
-my $IsTimeLine = 0;
 my $InMultilineSeparator = $ARGV[0];
+my $InMultilineEndSeparator="";
 my $InGrepFilter = $ARGV[1];
-my $InSearch = $ARGV[2];
-my $InReplace = $ARGV[3];
-my $InFileName = $ARGV[4];
+my $InGrepVFilter=0;
+my $InFileName = $ARGV[2];
+
 my $new_file = "";
 my %hash = ();
+
+sub LoadParams
+{
+    my $NewIf = 0;
+    
+    if($ARGV[0] =~ "-h")
+    {
+        printHelp();
+    }
+    for(my $i = 0; $i < $#ARGV; $i++)
+    {
+        if($ARGV[$i] =~ /^-.*/)
+        {
+            $NewIf = 1;
+        }
+    }
+    if($NewIf == 1)
+    {
+        $InMultilineSeparator = "";
+        $InGrepFilter = "";
+        $InFileName = "";
+
+        for(my $i = 0; $i < $#ARGV; $i++)
+        {
+            if($ARGV[$i] eq "-ss")
+            {
+                $InMultilineSeparator = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] eq "-es")
+            {
+                $InMultilineEndSeparator = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] eq "-s")
+            {
+                $InGrepFilter = $ARGV[$i + 1];
+                $InGrepVFilter=1;
+            }
+            elsif($ARGV[$i] eq "-r")
+            {
+                $InGrepFilter = $ARGV[$i + 1];
+            }
+            elsif($ARGV[$i] eq "-f")
+            {
+                $InFileName = $ARGV[$i + 1];
+            }
+        }
+    }
+    else
+    {
+        printHelp();
+    }
+}
+
+sub printHelp
+{
+    print STDOUT "\n-h Print this help";
+    print STDOUT "\n-ss \"RegEx for Start Separator\"";
+    print STDOUT "\n-es \"RegEx for End Separator\" (in case -es doesn't exist only -ss will be used)";
+    print STDOUT "\n-g \"RegEx for grepping the multiline\" whatever passes this RegEx will be in output";
+    print STDOUT "\n-gv \"RegEx for grepping the multiline\" whatever passes this RegEx will NOT be in output";
+    print STDOUT "\n-f \"Input file name\" - this param is not mandatory, STDIN can be used as input ";
+    print STDOUT "\nSupport backward comp of using \"RegExp for Start Separator\" \"RegEx for grepping the multiline\" \"Input File name\"";
+    exit;
+}
 
 sub MyReadline
 {
@@ -42,30 +106,18 @@ sub MyReadline
         $line = <STDIN>;
     }
 }
-
-sub ProcessMultilineData
+sub CheckAndAddToResult
 {
-    if($PassesUserFilter == 1)
+    if(($PassesUserFilter == 1 && $InGrepVFilter == 0) ||  ($PassesUserFilter == 0 && $InGrepVFilter == 1) )
     {
-        $cmi =~ s/$InSearch/$InReplace/g;
-        
-        if($InSearch =~ "\n" && $InReplace =~ "\\n")
-        {
-            $cmi = $cmi . "\n";
-        }
-        if($InSearch =~ "\r" && $InReplace =~ "\\r")
-        {
-            $cmi = $cmi . "\n";
-        }
+        $keyVal=$keyVal+1;
+        $hash{$keyVal}->{stack} = $cmi;
     }
-    $keyVal=$keyVal+1;
-    $hash{$keyVal}->{stack} = $cmi;
-    $FoundCountNonCmi = $FoundCountNonCmi + 1;
-    $cmi=$line;
-    $IsTimeLine=1;
+    $cmi="";
     $PassesUserFilter=0;
 }
 
+LoadParams();
 if($InFileName)
 {
     open(INFILE,$InFileName);
@@ -100,23 +152,40 @@ else
 MyReadline();
 while ($line)
 {
-	if($line =~ /$InMultilineSeparator/)
-	{
-        ProcessMultilineData();
-	}
-	if($line =~ /.*$UserFilter.*/)
-	{
-		$PassesUserFilter=1;
-	}
-    if($IsTimeLine!=1)
+    if($line =~ /$InMultilineSeparator/)
     {
-        $cmi .= $line;
+        if($InMultilineEndSeparator eq "")
+        {
+            CheckAndAddToResult();
+        }
+        else
+        {
+            my @splitarr= split(/$InMultilineSeparator/,$line);
+            $FoundCount=$FoundCount+@splitarr;
+        }
     }
-    $IsTimeLine=0;
+    if($line =~ /$UserFilter/)
+    {
+        $PassesUserFilter=1;
+    }
+    $cmi.=$line;
+    if(not $InMultilineEndSeparator =~ "")
+    {
+        if($FoundCount > 0 && $line =~ /$InMultilineEndSeparator/)
+        {
+            my @splitarr= split(/$InMultilineEndSeparator/,$line);
+            $FoundCount=$FoundCount-@splitarr;
+            
+            if($FoundCount == 0)
+            {
+                CheckAndAddToResult();
+            }
+        }       
+    }
     MyReadline();
 }
 
-ProcessMultilineData();
+CheckAndAddToResult();
 
 my $fh;
 if($new_file)
