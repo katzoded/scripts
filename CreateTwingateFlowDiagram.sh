@@ -17,7 +17,10 @@ do
 
   for tokenval in "${TOKENS[@]}"
   do
-    tokenarr=($(/bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | grep "${tokenval}" | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*${tokenval}\"\([a-zA-Z0-9\+\/\=\.]*\)\".*" "\1 "))
+    echo "/bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | grep \"${tokenval}\" | \
+    ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh"
+    tokenarr=($(/bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | grep "${tokenval}" | \
+    ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*${tokenval}\"\(.*\)\".*" "\1 "))
     for token in "${tokenarr[@]}"
     do
       echo "tokenval = ${tokenval} \n token = $token"
