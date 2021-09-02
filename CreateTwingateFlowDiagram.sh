@@ -1,9 +1,34 @@
 #!/bin/bash
 
-FILENAME=~/tmp/IntegrationMessages.txt
+FILENAME=${1}
+ELEMENT_1=${2}
+ELEMENT_2=${3}
+
 USERS=($(/bin/cat ${FILENAME} | grep "Testing user" | \
 ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*(\(.*\)@\(.*\)) .*" "\1@\2" | grep -v "(" | xargs))
 #USERS=("Benjamin.Edwards@ward-mack.com")
+replace_http_precentage_symbols()
+{
+  while read -r line
+  do
+    existance=$(echo $line | grep "%")
+    if [ "${existance}" != "" ]; then
+      editedline=""
+      for (( i=0; i<${#line}; i++ )); do
+        c=${line:i:1}
+        if [[ "${c}" == "%" ]]; then
+          editedline+=$(echo 0x${line:i+1:2} | xxd -r)
+
+          ((i+=2))
+        else
+          editedline+="${c}"
+        fi
+      done
+      line=${editedline}
+    fi
+    echo ${line} >> ${FILENAME}.${arr[0]}.${arr[1]}.txt
+  done < "${FILENAME}.${arr[0]}.${arr[1]}"
+}
 
 convert_and_replace()
 {
@@ -61,12 +86,14 @@ do
 
   /bin/cat ${FILENAME} | \
   ~/dev-newton/scripts/grep.multiline.pl -ss "Testing user.*" -g "${arr[0]}@${arr[1]}" > ${FILENAME}.${arr[0]}.${arr[1]};
-  cp ${FILENAME}.${arr[0]}.${arr[1]} ${FILENAME}.${arr[0]}.${arr[1]}.txt
+
+  echo '' > ${FILENAME}.${arr[0]}.${arr[1]}.txt
+
+  replace_http_precentage_symbols
 
   base64=""
   while read -r line
   do
- #   echo "line=${line}"
     for (( i=0; i<${#line}; i++ )); do
       c=${line:i:1}
       if [[ !(${c} =~ [a-zA-Z0-9/+]) ]]; then
@@ -75,7 +102,7 @@ do
       else
         base64+="${c}"
         if [[ "${c}" == "%" ]]; then
-          i+=2
+          ((i+=2))
         fi
       fi
     done
@@ -86,7 +113,7 @@ do
   tr '\n' "\\" | \
   ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\-----------RE" "\n-----------RE" |
   ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh '\\' '\\n' | \
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\(.*\)" "note over Client: \1 \2\\\\n\3\n Client->Controller@\2:\1" | \
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*RESP.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\\\\n\([0-9]*\)\(.*\)" "Controller@\2->Client:\3\nnote over Client: \3\\\\n\4" \
+  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\(.*\)" "note over ${ELEMENT_1}: \1 \2\\\\n\3\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
+  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*RESP.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\\\\n\([0-9]*\)\(.*\)" "${ELEMENT_2}@\2->${ELEMENT_1}:\3\nnote over ${ELEMENT_1}: \3\\\\n\4" \
   > ${FILENAME}.${arr[0]}.${arr[1]}.txt.flow
 done
