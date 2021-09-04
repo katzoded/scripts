@@ -17,16 +17,20 @@ replace_http_precentage_symbols()
       for (( i=0; i<${#line}; i++ )); do
         c=${line:i:1}
         if [[ "${c}" == "%" ]]; then
-          editedline+=$(echo 0x${line:i+1:2} | xxd -r)
+          if [[ ${line:i+1:2} =~ [a-fA-F0-9] ]]; then
+            editedline+=$(echo 0x${line:i+1:2} | xxd -r)
 
-          ((i+=2))
+            ((i+=2))
+          else
+            editedline+="${c}"
+          fi
         else
           editedline+="${c}"
         fi
       done
-      line=${editedline}
+      line="${editedline}"
     fi
-    echo ${line} >> ${FILENAME}.${arr[0]}.${arr[1]}.txt
+    echo "${line}" >> ${FILENAME}.${arr[0]}.${arr[1]}.txt
   done < "${FILENAME}.${arr[0]}.${arr[1]}"
 }
 
@@ -36,12 +40,9 @@ convert_and_replace()
   if [ "$?" != 0 ]; then 
     return 0;
   fi
-
   if [ "${decodedbase64}" != "" ]; then
     for (( j=0; j<${#decodedbase64}; j++ )); do
       c=${decodedbase64:j:1}
-#      if [[ !(${c} =~ [a-zA-Z0-9 .,;:\'\"\/\\()_+=~@&*-]) ]]; then
-#      if [[ !(${c} =~ [a-zA-Z0-9\.\"\'\:_\-,\ \/\\\(\)\+\*\~\&\[\]@]) ]]; then
      if [[ !(${c} =~ [a-zA-Z0-9:,\ \-\._]) ]]; then
         if [[ "${c}" != "{" && "${c}" != "}" && "${c}" != "[" && "${c}" != "]" && "${c}" != "\"" ]]; then
           j=${#decodedbase64}
@@ -79,6 +80,34 @@ convert_and_replace()
   fi
 }
 
+replace_all_base64()
+{
+  base64=""
+  while read -r line
+  do
+    for (( i=0; i<${#line}; i++ )); do
+      c=${line:i:1}
+      if [[ !(${c} =~ [a-zA-Z0-9/+]) ]]; then
+        if [[ "${line:i:1}" == "=" ]]; then
+          base64+="${line:i:1}"
+          ((i++))
+        fi
+        if [[ "${line:i:1}" == "=" ]]; then
+          base64+="${line:i:1}"
+          ((i++))
+        fi
+        convert_and_replace
+        base64=""
+      else
+        base64+="${c}"
+        if [[ "${c}" == "%" ]]; then
+          ((i+=2))
+        fi
+      fi
+    done
+  done < "${FILENAME}.${arr[0]}.${arr[1]}.txt"
+}
+
 for i in "${USERS[@]}"
 do
    arr=($(echo $i | tr '@' ' '))
@@ -90,24 +119,9 @@ do
   echo '' > ${FILENAME}.${arr[0]}.${arr[1]}.txt
 
   replace_http_precentage_symbols
-
-  base64=""
-  while read -r line
-  do
-    for (( i=0; i<${#line}; i++ )); do
-      c=${line:i:1}
-      if [[ !(${c} =~ [a-zA-Z0-9/+]) ]]; then
-        convert_and_replace
-        base64=""
-      else
-        base64+="${c}"
-        if [[ "${c}" == "%" ]]; then
-          ((i+=2))
-        fi
-      fi
-    done
-  done < "${FILENAME}.${arr[0]}.${arr[1]}.txt"
   
+  replace_all_base64
+  replace_all_base64
   
   /bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | fold -w 80 | \
   tr '\n' "\\" | \
