@@ -5,7 +5,7 @@ ELEMENT_1=${2}
 ELEMENT_2=${3}
 
 USERS=($(/bin/cat ${FILENAME} | grep "Testing user" | \
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*(\(.*\)@\(.*\)) .*" "\1@\2" | grep -v "(" | xargs))
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*(\(.*\)@\(.*\)).*" "\1@\2" | grep -v "(" | xargs))
 #USERS=("Benjamin.Edwards@ward-mack.com")
 replace_http_precentage_symbols()
 {
@@ -36,7 +36,11 @@ replace_http_precentage_symbols()
 
 convert_and_replace()
 {
-  decodedbase64=$(echo ${base64} | base64 -d)
+#  if [ ${#base64} -ge 100 ]; then
+#    echo "${base64}"
+#  fi
+
+  decodedbase64=$(echo "${base64}" | base64 -d)
   if [ "$?" != 0 ]; then 
     return 0;
   fi
@@ -46,6 +50,10 @@ convert_and_replace()
      if [[ !(${c} =~ [a-zA-Z0-9:,\ \-\._]) ]]; then
         if [[ "${c}" != "{" && "${c}" != "}" && "${c}" != "[" && "${c}" != "]" && "${c}" != "\"" ]]; then
           j=${#decodedbase64}
+#          if [ ${#base64} -ge 100 ]; then
+#            echo "invalid char ${j}, ${c}\n ${decodedbase64}"
+#          fi
+
           return 0;
         fi
       fi
@@ -90,10 +98,9 @@ replace_all_base64()
       if [[ !(${c} =~ [a-zA-Z0-9/+]) ]]; then
         if [[ "${line:i:1}" == "=" ]]; then
           base64+="${line:i:1}"
-          ((i++))
         fi
-        if [[ "${line:i:1}" == "=" ]]; then
-          base64+="${line:i:1}"
+        if [[ "${line:i+1:1}" == "=" ]]; then
+          base64+="${line:i+1:1}"
           ((i++))
         fi
         convert_and_replace
@@ -114,7 +121,7 @@ do
    echo "name=${arr[0]}\ndomain=${arr[1]}"
 
   /bin/cat ${FILENAME} | \
-  ~/dev-newton/scripts/grep.multiline.pl -ss "Testing user.*" -g "${arr[0]}@${arr[1]}" > ${FILENAME}.${arr[0]}.${arr[1]};
+  ~/dev-newton/scripts/grep.multiline.pl -ss "Testing user.*" -g "\(${arr[0]}@${arr[1]}\)" > ${FILENAME}.${arr[0]}.${arr[1]};
 
   echo '' > ${FILENAME}.${arr[0]}.${arr[1]}.txt
 
