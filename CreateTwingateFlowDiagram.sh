@@ -4,9 +4,6 @@ FILENAME=${1}
 ELEMENT_1=${2}
 ELEMENT_2=${3}
 
-USERS=($(/bin/cat ${FILENAME} | grep "Testing user" | \
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh ".*(\(.*\)@\(.*\)).*" "\1@\2" | grep -v "(" | xargs))
-#USERS=("Benjamin.Edwards@ward-mack.com")
 replace_http_precentage_symbols()
 {
   while read -r line
@@ -30,8 +27,8 @@ replace_http_precentage_symbols()
       done
       line="${editedline}"
     fi
-    echo "${line}" >> ${FILENAME}.${arr[0]}.${arr[1]}.txt
-  done < "${FILENAME}.${arr[0]}.${arr[1]}"
+    echo "${line}" >> ${FILENAME}.txt
+  done < "${FILENAME}"
 }
 
 convert_and_replace()
@@ -39,9 +36,12 @@ convert_and_replace()
 #  if [ ${#base64} -ge 100 ]; then
 #    echo "${base64}"
 #  fi
-
+  if [[ "${base64}" == "==" || "${base64}" == "=" ]]; then
+      return 0;
+  fi
   decodedbase64=$(echo "${base64}" | base64 -d)
-  if [ "$?" != 0 ]; then 
+  if [ "$?" != 0 ]; then
+    echo "failed to convert input=${base64}"
     return 0;
   fi
   if [ "${decodedbase64}" != "" ]; then
@@ -66,10 +66,10 @@ convert_and_replace()
     do 
     #        echo "base64 length = ${#base64}"
       partbase64=$(echo ${base64} | cut -c1-400)
-      /bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "" \
-      > ${FILENAME}.${arr[0]}.${arr[1]}.txt.tmp
+      /bin/cat ${FILENAME}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "" \
+      > ${FILENAME}.txt.tmp
       if [ "$?" -eq 0 ]; then 
-        mv ${FILENAME}.${arr[0]}.${arr[1]}.txt.tmp ${FILENAME}.${arr[0]}.${arr[1]}.txt;
+        mv ${FILENAME}.txt.tmp ${FILENAME}.txt;
       fi
       base64=$(echo ${base64} | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "")
     done
@@ -79,10 +79,10 @@ convert_and_replace()
     #    echo "decodedbase64 = $decodedbase64"
     #   echo "base64 = $base64"
 
-    /bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${base64}" "${decodedbase64}" \
-    > ${FILENAME}.${arr[0]}.${arr[1]}.txt.tmp
+    /bin/cat ${FILENAME}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${base64}" "${decodedbase64}" \
+    > ${FILENAME}.txt.tmp
     if [ "$?" -eq 0 ]; then 
-      mv ${FILENAME}.${arr[0]}.${arr[1]}.txt.tmp ${FILENAME}.${arr[0]}.${arr[1]}.txt;
+      mv ${FILENAME}.txt.tmp ${FILENAME}.txt;
     fi
 
   fi
@@ -112,29 +112,24 @@ replace_all_base64()
         fi
       fi
     done
-  done < "${FILENAME}.${arr[0]}.${arr[1]}.txt"
+  done < "${FILENAME}.txt"
 }
 
-for i in "${USERS[@]}"
-do
-   arr=($(echo $i | tr '@' ' '))
-   echo "name=${arr[0]}\ndomain=${arr[1]}"
+echo '' > ${FILENAME}.txt
 
-  /bin/cat ${FILENAME} | \
-  ~/dev-newton/scripts/grep.multiline.pl -ss "Testing user.*" -g "\(${arr[0]}@${arr[1]}\)" > ${FILENAME}.${arr[0]}.${arr[1]};
+echo "$(date): Replacing all %HH symbols"
+replace_http_precentage_symbols
 
-  echo '' > ${FILENAME}.${arr[0]}.${arr[1]}.txt
+echo "$(date): Replacing all base64 - phase I"
+replace_all_base64
+echo "$(date): Replacing all base64 - phase II"
+replace_all_base64
 
-  replace_http_precentage_symbols
-  
-  replace_all_base64
-  replace_all_base64
-  
-  /bin/cat ${FILENAME}.${arr[0]}.${arr[1]}.txt | fold -w 80 | \
-  tr '\n' "\\" | \
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\-----------RE" "\n-----------RE" |
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh '\\' '\\n' | \
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\(.*\)" "note over ${ELEMENT_1}: \1 \2\\\\n\3\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
-  ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*RESP.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\\\\n\([0-9]*\)\(.*\)" "${ELEMENT_2}@\2->${ELEMENT_1}:\3\nnote over ${ELEMENT_1}: \3\\\\n\4" \
-  > ${FILENAME}.${arr[0]}.${arr[1]}.txt.flow
-done
+echo "$(date): creating Flow for ${FILENAME}"
+/bin/cat ${FILENAME}.txt | \
+fold -w 80 | \
+sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g' | \
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\-----------RE" "\n-----------RE" |
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\) \(.*\\\\n\)\(.*\)" "note over ${ELEMENT_1}: \1 \2\\\\\3\\\\n\4\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*RESP.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\\\\n\([0-9]*\)\\\\n\(.*\)" "${ELEMENT_2}@\2->${ELEMENT_1}:\3\nnote over ${ELEMENT_1}: \3\\\\n\4" \
+> ${FILENAME}.txt.flow
