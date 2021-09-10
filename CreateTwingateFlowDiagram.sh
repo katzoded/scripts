@@ -66,10 +66,10 @@ convert_and_replace()
     do 
     #        echo "base64 length = ${#base64}"
       partbase64=$(echo ${base64} | cut -c1-400)
-      /bin/cat ${FILENAME}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "" \
-      > ${FILENAME}.txt.tmp
+      /bin/cat ${FILENAME}.txt.tmp | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "" \
+      > ${FILENAME}.txt.tmp.1
       if [ "$?" -eq 0 ]; then 
-        mv ${FILENAME}.txt.tmp ${FILENAME}.txt;
+        mv ${FILENAME}.txt.tmp.1 ${FILENAME}.txt.tmp;
       fi
       base64=$(echo ${base64} | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${partbase64}" "")
     done
@@ -79,20 +79,21 @@ convert_and_replace()
     #    echo "decodedbase64 = $decodedbase64"
     #   echo "base64 = $base64"
 
-    /bin/cat ${FILENAME}.txt | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${base64}" "${decodedbase64}" \
-    > ${FILENAME}.txt.tmp
+    /bin/cat ${FILENAME}.txt.tmp | ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "${base64}" "${decodedbase64}" \
+    > ${FILENAME}.txt.tmp.1
     if [ "$?" -eq 0 ]; then 
-      mv ${FILENAME}.txt.tmp ${FILENAME}.txt;
+      mv ${FILENAME}.txt.tmp.1 ${FILENAME}.txt.tmp;
     fi
-
   fi
 }
 
 replace_all_base64()
 {
+  cp ${FILENAME}.txt ${FILENAME}.txt.tmp
   base64=""
   while read -r line
   do
+#    echo "$(date): line=${line}"
     for (( i=0; i<${#line}; i++ )); do
       c=${line:i:1}
       if [[ !(${c} =~ [a-zA-Z0-9/+]) ]]; then
@@ -113,6 +114,7 @@ replace_all_base64()
       fi
     done
   done < "${FILENAME}.txt"
+  mv ${FILENAME}.txt.tmp ${FILENAME}.txt
 }
 
 echo '' > ${FILENAME}.txt
@@ -130,6 +132,7 @@ echo "$(date): creating Flow for ${FILENAME}"
 fold -w 80 | \
 sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g' | \
 ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "\-----------RE" "\n-----------RE" |
-~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\) \(.*\\\\n\)\(.*\)" "note over ${ELEMENT_1}: \1 \2\\\\\3\\\\n\4\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\) \(.*\\\\n\)\(.*\)" "note over ${ELEMENT_1}: \1 \2?\3\\\\n\4\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
+~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*REQ.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\(.*\)" "note over ${ELEMENT_1}: \1 \2\\\\n\3\n ${ELEMENT_1}->${ELEMENT_2}@\2:\1" | \
 ~/dev-newton/scripts/NoFileCreationReplaceFileList.sh "^.*RESP.*-\\\\n\([A-Z]* \)\([a-z0-9\/_]*\)\\\\n\\\\n\([0-9]*\)\\\\n\(.*\)" "${ELEMENT_2}@\2->${ELEMENT_1}:\3\nnote over ${ELEMENT_1}: \3\\\\n\4" \
 > ${FILENAME}.txt.flow
