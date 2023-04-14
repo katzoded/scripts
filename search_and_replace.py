@@ -41,13 +41,13 @@ def main():
     for line in file:
         update_line = line
         if match := re.match(pattern=args.search, string=line):
-            if args.replace:
-                update_line = re.sub(args.search, args.replace, line)
-            elif args.cmd:
+            if args.cmd:
                 for single_match in match.groups():
                     cmd = args.cmd.replace("{MATCH}", single_match)
                     cmd_output = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
                     update_line = update_line.replace(single_match, cmd_output.stdout)
+            else:
+                update_line = re.sub(args.search, args.replace or "", line)
 
         print(update_line, end='')
 
