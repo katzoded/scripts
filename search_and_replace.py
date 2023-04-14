@@ -5,6 +5,7 @@ import sys
 import fileinput
 import argparse
 import re
+import subprocess
 
 
 def parse_args():
@@ -16,6 +17,10 @@ def parse_args():
     parser.add_argument(
         "--replace", default="",
         help="regex to replace (Optional Param) if none the every finding will be replaced with nothing"
+    )
+    parser.add_argument(
+        "--cmd", default="",
+        help="Run a command on the found exp"
     )
     parser.add_argument(
         "--file",
@@ -34,7 +39,17 @@ def main():
         file = sys.stdin
 
     for line in file:
-        print(re.sub(args.search, args.replace, line), end='')
+        update_line = line
+        if match := re.match(pattern=args.search, string=line):
+            if args.replace:
+                update_line = re.sub(args.search, args.replace, line)
+            elif args.cmd:
+                for single_match in match.groups():
+                    cmd = args.cmd.replace("{MATCH}", single_match)
+                    cmd_output = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                    update_line = update_line.replace(single_match, cmd_output.stdout)
+
+        print(update_line, end='')
 
 
 if __name__ == "__main__":
