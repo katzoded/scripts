@@ -18,19 +18,28 @@ def parse_args():
         "--dont-escape", default="",
         help="list of chars which you don't want to escape"
     )
+    parser.add_argument(
+        "--force-escape", default="",
+        help="list of chars which you wish to be escaped"
+    )
     return parser.parse_args()
 
+
+def escape_str(input_str, force_escape, dont_escape) -> str:
+    output = re.escape(input_str)
+    for char in force_escape or "":
+        output = output.replace(char, f"\\{char}")
+
+    for char in dont_escape or "":
+        output = output.replace(f"\\{char}", char)
+
+    return output
 
 def main():
     args = parse_args()
     force_escape = ":"
-    output = re.escape(args.input)
-    for char in force_escape:
-        output = output.replace(char, f"\\{char}")
-    if args.dont_escape:
-        for char in args.dont_escape:
-            output = output.replace(f"\\{char}", char)
-    print(output, end='')
+
+    print(escape_str(args.input, force_escape, args.dont_escape), end='')
 
 
 if __name__ == "__main__":
