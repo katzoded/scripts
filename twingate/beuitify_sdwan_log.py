@@ -97,7 +97,7 @@ def main():
             output = pre_defined_output
         elif found_json_str:
             json_str = json.dumps(found_json_dict, indent=1)
-            wrapped_json = textwrap.fill(json_str, 80).replace('\n', '\\n')
+            wrapped_json = textwrap.fill(json_str, 80, drop_whitespace=False, replace_whitespace=False).replace('\n', '\\n')
             if module is None:
                 escaped_json = re.escape(found_json_str)
                 module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
@@ -107,7 +107,7 @@ def main():
         else:
             escaped_module = re.escape(module)
             output = search_and_replace(line, f"^\[.*\] {escaped_module} (.*)\n", r"\1")
-            output = textwrap.fill(output, 80).replace('\n', '\\n')
+            output = textwrap.fill(output, 80, drop_whitespace=False, replace_whitespace=False).replace('\n', '\\n')
             module = re.split("\ |:", module)[0]
             output = f"note over {module}: {output} \\n {time_str}"
 
