@@ -42,20 +42,27 @@ def get_module(line: str, modules: set) -> str | None:
     return None
 
 
-def has_json(line: str) -> tuple[str | None, dict | None]:
-    firstValue = line.find("{")
-    lastValue = line.rfind("}")
+def has_json(line: str) -> dict | None:
+    found_json = {}
 
-    try:
-        jsonString = line[firstValue:lastValue + 1]
-        json_dict = json.loads(jsonString)
-    except Exception as e:
-        return None, None
+    start = 0
+    while True:
+        found_str, start, end = find_closing(line, start, "{", "}")
+        if found_str is None:
+            break
 
-    return jsonString, json_dict
+        start = end
+        try:
+            json_dict = json.loads(found_str)
+        except Exception as e:
+            continue
+
+        found_json[found_str] = json_dict
+
+    return found_json
 
 
-def pre_defined_changes(line: str) -> str | None:
+def pre_defined_http_line(line: str) -> str | None:
     output = search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*",
                        r"sdwan->\3: \2 \4\\\\n \1")
     output = output or search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)",
@@ -67,6 +74,39 @@ def pre_defined_changes(line: str) -> str | None:
 def had_date(line: str) -> str | None:
     return search_and_replace(line, r"^(\[.*[0-9]\]) .*\n", r"\1")
 
+
+def find_closing(line, index, opening, closing) -> tuple[str | None, int | None, int | None]:
+    items = []
+    start = -1
+    for i, c in enumerate(line[index:]):
+        iter_i = index + i
+        if c == opening:
+            if start == -1:
+                start = iter_i
+            items.append(iter_i)
+        if c == closing:
+            items.pop()
+        if len(items) == 0 and start > 0:
+            return line[start:iter_i + 1], start, iter_i + 1
+
+    return None, None, None
+
+
+def pre_defined_module_changes(line, module, time_str) -> str | None:
+    escaped_module = re.escape(module)
+    output = search_and_replace(line, f"^\[.*\] {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
+    output = output or search_and_replace(line, f"^\[.*\] {escaped_module} (.*)\n", r"\1")
+    output = line_fold(output)
+    module = re.split("\ |:", module)[0]
+    return f"note over {module}: {output} \\n {time_str}"
+
+
+def line_fold(line) -> str:
+    line_array = line.split("\n")
+    for i in range(len(line_array)):
+        line_array[i] = textwrap.fill(line_array[i], 80, drop_whitespace=False, replace_whitespace=False)
+
+    return "\n".join(line_array).replace('\n', '\\n')
 
 
 def main():
@@ -88,28 +128,27 @@ def main():
             continue
 
         module = get_module(line, modules)
-        pre_defined_output = pre_defined_changes(line)
-        found_json_str, found_json_dict = has_json(line)
-        if module is None and pre_defined_output is None and found_json_str is None:
+        pre_defined_output = pre_defined_http_line(line)
+        found_json_dict = has_json(line)
+        if not found_json_dict and module is None and pre_defined_output is None:
             continue
 
         if pre_defined_output:
             output = pre_defined_output
-        elif found_json_str:
-            json_str = json.dumps(found_json_dict, indent=1)
-            wrapped_json = textwrap.fill(json_str, 80, drop_whitespace=False, replace_whitespace=False).replace('\n', '\\n')
-            if module is None:
-                escaped_json = re.escape(found_json_str)
-                module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
-                module = re.split("\ |:", module)[0]
+        elif found_json_dict:
+            wrapped_json = ""
+            for found_json_str, found_json_dict in found_json_dict.items():
+                json_str = json.dumps(found_json_dict, indent=1)
+                json_str += "\n"
+                wrapped_json += line_fold(json_str)
+                if module is None:
+                    escaped_json = re.escape(found_json_str)
+                    module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
+                    module = re.split("\ |:", module)[0]
 
             output = f"note over {module}: {wrapped_json} \\n {time_str}"
         else:
-            escaped_module = re.escape(module)
-            output = search_and_replace(line, f"^\[.*\] {escaped_module} (.*)\n", r"\1")
-            output = textwrap.fill(output, 80, drop_whitespace=False, replace_whitespace=False).replace('\n', '\\n')
-            module = re.split("\ |:", module)[0]
-            output = f"note over {module}: {output} \\n {time_str}"
+            output = pre_defined_module_changes(line, module, time_str)
 
         print(output)
 
