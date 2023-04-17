@@ -8,13 +8,15 @@ import re
 import subprocess
 import textwrap
 from search_and_replace import search_and_replace
+import urllib.parse
+import webbrowser
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--additional-modules",
-        default = "",
+        default="",
         help="additional modules to extract from logs",
     )
     parser.add_argument(
@@ -63,10 +65,10 @@ def has_json(line: str) -> dict | None:
 
 
 def pre_defined_http_line(line: str) -> str | None:
-    output = search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*",
-                       r"sdwan->\3: \2 \4\\\\n \1")
-    output = output or search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)",
-                        r"\2->sdwan:\3: \\\\n \1")
+    output = search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n",
+                       r"sdwan->\3: \2 \4\\n \1")
+    output = output or search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)\n",
+                        r"\2->sdwan:\3: \\n \1")
 
     return output
 
@@ -94,8 +96,9 @@ def find_closing(line, index, opening, closing) -> tuple[str | None, int | None,
 
 def pre_defined_module_changes(line, module, time_str) -> str | None:
     escaped_module = re.escape(module)
-    output = search_and_replace(line, f"^\[.*\] {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
-    output = output or search_and_replace(line, f"^\[.*\] {escaped_module} (.*)\n", r"\1")
+    escaped_time_str = re.escape(time_str)
+    output = search_and_replace(line, f"^{escaped_time_str} {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
+    output = output or search_and_replace(line, f"^{escaped_time_str} {escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
     module = re.split("\ |:", module)[0]
     return f"note over {module}: {output} \\n {time_str}"
@@ -109,6 +112,10 @@ def line_fold(line) -> str:
     return "\n".join(line_array).replace('\n', '\\n')
 
 
+def is_curl_str(line) -> str | None:
+    return search_and_replace(line, f"^[\<\>] (.*)\n", r"\1\n")
+
+
 def main():
     args = parse_args()
     modules: set = set()
@@ -119,16 +126,33 @@ def main():
 
     if args.file:
         file = open(args.file, 'r+')
+        print(f"title {args.file.split('/')[-1]}")
     else:
         file = sys.stdin
 
+    multiline_str = ""
     for line in file:
+        pre_defined_output = ""
         time_str = had_date(line)
         if time_str is None:
-            continue
+
+            if curr_curl_line := is_curl_str(line):
+                 multiline_str += curr_curl_line
+                 continue
+            else:
+                if multiline_str:
+                    source = "sdwan"
+                    dest = "curl"
+                    if re.search("^HTTP.*", multiline_str):
+                        source, dest = dest, source
+
+                    pre_defined_output = f"{source}->{dest}:{line_fold(multiline_str)}"
+                    multiline_str = ""
+                else:
+                    continue
 
         module = get_module(line, modules)
-        pre_defined_output = pre_defined_http_line(line)
+        pre_defined_output = pre_defined_output or pre_defined_http_line(line)
         found_json_dict = has_json(line)
         if not found_json_dict and module is None and pre_defined_output is None:
             continue
@@ -149,6 +173,9 @@ def main():
             output = f"note over {module}: {wrapped_json} \\n {time_str}"
         else:
             output = pre_defined_module_changes(line, module, time_str)
+
+        if not output:
+            continue
 
         print(output)
 
