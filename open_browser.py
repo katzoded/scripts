@@ -42,6 +42,8 @@ def main():
     quote_param_str = urllib.parse.quote(param_str)
 
     url = f"{args.url}{args.param}={quote_param_str}"
+
+    print(f"open browser with {url}")
     webbrowser.open(url)
 
 
