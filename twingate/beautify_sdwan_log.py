@@ -10,7 +10,8 @@ import textwrap
 from search_and_replace import search_and_replace
 import urllib.parse
 import webbrowser
-
+from datetime import datetime
+import calendar
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -117,10 +118,8 @@ def is_curl_str(line) -> str | None:
     return search_and_replace(line, f"^[\<\>] (.*)\n", r"\1\n")
 
 
-def print_chosen_modules(modules_dict):
-    sorted_module_list = sorted(modules_dict.items(), key=lambda item: item[1], reverse=True)
-    for module_tuple in sorted_module_list:
-        print (f"participant \"{module_tuple[0]}\\n {module_tuple[1]}\" as {module_tuple[0]}")
+def get_sorted_modules(modules_dict):
+    return sorted(modules_dict.items(), key=lambda item: item[1], reverse=True)
 
 
 def create_output(modules_dict: dict, time_str, module, text) -> str:
@@ -139,6 +138,17 @@ def create_output_for_2_modules(modules_dict: dict, time_str, src_module, dst_mo
     return f"{src_module}->{dst_module}:{text}\\n {time_str}"
 
 
+def convert_time_str_to_time(time_str) -> int:
+    if match := re.search("\[(.*)\.([0-9]*)\]", time_str):
+        datetime_str = match.groups()[0]
+        millisecond_str = match.groups()[1]
+
+        epoc = calendar.timegm(datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S").timetuple()) * 1000000
+        return epoc + int(millisecond_str)
+
+    return 0
+
+
 def main():
     output_lines = []
     title =""
@@ -155,8 +165,12 @@ def main():
     else:
         file = sys.stdin
 
+    last_timestamp = ""
     multiline_str = ""
     modules_dict = {}
+    from datetime import datetime
+
+    prev_date_val_ms = convert_time_str_to_time("")
     for line in file:
         pre_defined_output = ""
         time_str = had_date(line)
@@ -171,10 +185,18 @@ def main():
                     if re.search("^HTTP.*", multiline_str):
                         source, dest = dest, source
 
-                    pre_defined_output = create_output_for_2_modules(modules_dict, "", source, dest, line_fold(multiline_str))
+                    time_str = last_timestamp
+                    pre_defined_output = create_output_for_2_modules(modules_dict, time_str, source, dest, line_fold(multiline_str))
                     multiline_str = ""
                 else:
                     continue
+
+        curr_date_val_ms = convert_time_str_to_time(time_str)
+        if curr_date_val_ms - prev_date_val_ms > 50000:
+            output_lines.append("ExternalEvent")
+
+        last_timestamp = time_str
+        prev_date_val_ms = curr_date_val_ms
 
         module = get_module(line, modules)
         pre_defined_output = pre_defined_output or pre_defined_http_line(modules_dict, line)
@@ -205,8 +227,14 @@ def main():
         output_lines.append(output)
 
     print(title)
-    print_chosen_modules(modules_dict)
+    sorted_modules = get_sorted_modules(modules_dict)
+    for module_tuple in sorted_modules:
+        print(f"participant \"{module_tuple[0]}\\n {module_tuple[1]}\" as {module_tuple[0]}")
+
     for line in output_lines:
+        if line == "ExternalEvent":
+            print(f"note over {sorted_modules[0][0]},{sorted_modules[-1][0]}: line")
+            continue
         print(line)
 
 
