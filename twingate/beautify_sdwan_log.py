@@ -64,13 +64,14 @@ def has_json(line: str) -> dict | None:
     return found_json
 
 
-def pre_defined_http_line(line: str) -> str | None:
-    output = search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n",
-                       r"sdwan->\3: \2 \4\\n \1")
-    output = output or search_and_replace(line, r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)\n",
-                        r"\2->sdwan:\3: \\n \1")
+def pre_defined_http_line(modules_dict, line: str) -> str | None:
+    if match := re.search(r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n", line):
+        return create_output_for_2_modules(modules_dict, match.groups()[0], "sdwan", match.groups()[2], f"{match.groups()[1]} {match.groups()[3]}")
 
-    return output
+    if match:= re.search(r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)\n", line):
+        return create_output_for_2_modules(modules_dict, match.groups()[0], match.groups()[1], "sdwan",
+                                           {match.groups()[2]})
+    return None
 
 
 def had_date(line: str) -> str | None:
@@ -94,14 +95,14 @@ def find_closing(line, index, opening, closing) -> tuple[str | None, int | None,
     return None, None, None
 
 
-def pre_defined_module_changes(line, module, time_str) -> str | None:
+def pre_defined_module_changes(modules_dict, line, module, time_str) -> str | None:
     escaped_module = re.escape(module)
     escaped_time_str = re.escape(time_str)
     output = search_and_replace(line, f"^{escaped_time_str} {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
     output = output or search_and_replace(line, f"^{escaped_time_str} {escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
     module = re.split("\ |:", module)[0]
-    return f"note over {module}: {output} \\n {time_str}"
+    return create_output(modules_dict, time_str, module, output)
 
 
 def line_fold(line) -> str:
@@ -116,7 +117,31 @@ def is_curl_str(line) -> str | None:
     return search_and_replace(line, f"^[\<\>] (.*)\n", r"\1\n")
 
 
+def print_chosen_modules(modules_dict):
+    sorted_module_list = sorted(modules_dict.items(), key=lambda item: item[1], reverse=True)
+    for module_tuple in sorted_module_list:
+        print (f"participant \"{module_tuple[0]}\\n {module_tuple[1]}\" as {module_tuple[0]}")
+
+
+def create_output(modules_dict: dict, time_str, module, text) -> str:
+    module = module.replace(":", "")
+    modules_dict[module] = modules_dict[module] + 1 if modules_dict.get(module) else 1
+
+    return f"note over {module}: {text} \\n {time_str}"
+
+
+def create_output_for_2_modules(modules_dict: dict, time_str, src_module, dst_module, text) -> str:
+    src_module = src_module.replace(":", "")
+    dst_module = dst_module.replace(":", "")
+    modules_dict[src_module] = modules_dict[src_module] + 1 if modules_dict.get(src_module) else 1
+    modules_dict[dst_module] = modules_dict[dst_module] + 1 if modules_dict.get(dst_module) else 1
+
+    return f"{src_module}->{dst_module}:{text}\\n {time_str}"
+
+
 def main():
+    output_lines = []
+    title =""
     args = parse_args()
     modules: set = set()
 
@@ -126,16 +151,16 @@ def main():
 
     if args.file:
         file = open(args.file, 'r+')
-        print(f"title {args.file.split('/')[-1]}")
+        title = f"title {args.file.split('/')[-1]}"
     else:
         file = sys.stdin
 
     multiline_str = ""
+    modules_dict = {}
     for line in file:
         pre_defined_output = ""
         time_str = had_date(line)
         if time_str is None:
-
             if curr_curl_line := is_curl_str(line):
                  multiline_str += curr_curl_line
                  continue
@@ -146,13 +171,13 @@ def main():
                     if re.search("^HTTP.*", multiline_str):
                         source, dest = dest, source
 
-                    pre_defined_output = f"{source}->{dest}:{line_fold(multiline_str)}"
+                    pre_defined_output = create_output_for_2_modules(modules_dict, "", source, dest, line_fold(multiline_str))
                     multiline_str = ""
                 else:
                     continue
 
         module = get_module(line, modules)
-        pre_defined_output = pre_defined_output or pre_defined_http_line(line)
+        pre_defined_output = pre_defined_output or pre_defined_http_line(modules_dict, line)
         found_json_dict = has_json(line)
         if not found_json_dict and module is None and pre_defined_output is None:
             continue
@@ -170,14 +195,19 @@ def main():
                     module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
                     module = re.split("\ |:", module)[0]
 
-            output = f"note over {module}: {wrapped_json} \\n {time_str}"
+            output = create_output(modules_dict, time_str, module, wrapped_json)
         else:
-            output = pre_defined_module_changes(line, module, time_str)
+            output = pre_defined_module_changes(modules_dict, line, module, time_str)
 
         if not output:
             continue
 
-        print(output)
+        output_lines.append(output)
+
+    print(title)
+    print_chosen_modules(modules_dict)
+    for line in output_lines:
+        print(line)
 
 
 if __name__ == "__main__":
