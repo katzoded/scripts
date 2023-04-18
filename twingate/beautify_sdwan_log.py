@@ -21,6 +21,11 @@ def parse_args():
         help="additional modules to extract from logs",
     )
     parser.add_argument(
+        "--split",
+        default=True,
+        help="split the flow into smaller pieces",
+    )
+    parser.add_argument(
         "--file",
         default="",
         help="the file which needs to be read (optional param) STDIN can be used",
@@ -39,7 +44,7 @@ def get_all_modules_with_json(file) -> set:
 def get_module(line: str, modules: set) -> str | None:
     for module in modules:
 
-        if module_name := search_and_replace(line, f"^\[.*[0-9]\] ({module}).*\n", r"\1"):
+        if module_name := search_and_replace(line, f"^\[.*[0-9]\] {module}.*\n", r"\1"):
             return module_name
 
     return None
@@ -65,12 +70,12 @@ def has_json(line: str) -> dict | None:
     return found_json
 
 
-def pre_defined_http_line(modules_dict, line: str) -> str | None:
+def pre_defined_http_line(line: str) -> tuple[str, list] | None:
     if match := re.search(r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n", line):
-        return create_output_for_2_modules(modules_dict, match.groups()[0], "sdwan", match.groups()[2], f"{match.groups()[1]} {match.groups()[3]}")
+        return create_output_for_2_modules(match.groups()[0], "sdwan", match.groups()[2], f"{match.groups()[1]} {match.groups()[3]}")
 
     if match:= re.search(r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)\n", line):
-        return create_output_for_2_modules(modules_dict, match.groups()[0], match.groups()[1], "sdwan",
+        return create_output_for_2_modules(match.groups()[0], match.groups()[1], "sdwan",
                                            {match.groups()[2]})
     return None
 
@@ -96,14 +101,14 @@ def find_closing(line, index, opening, closing) -> tuple[str | None, int | None,
     return None, None, None
 
 
-def pre_defined_module_changes(modules_dict, line, module, time_str) -> str | None:
+def pre_defined_module_changes(line, module, time_str) -> str | None:
     escaped_module = re.escape(module)
     escaped_time_str = re.escape(time_str)
     output = search_and_replace(line, f"^{escaped_time_str} {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
     output = output or search_and_replace(line, f"^{escaped_time_str} {escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
     module = re.split("\ |:", module)[0]
-    return create_output(modules_dict, time_str, module, output)
+    return create_output(time_str, module, output)
 
 
 def line_fold(line) -> str:
@@ -122,20 +127,20 @@ def get_sorted_modules(modules_dict):
     return sorted(modules_dict.items(), key=lambda item: item[1], reverse=True)
 
 
-def create_output(modules_dict: dict, time_str, module, text) -> str:
-    module = module.replace(":", "")
+def add_to_module_dict(modules_dict: dict, module):
     modules_dict[module] = modules_dict[module] + 1 if modules_dict.get(module) else 1
 
+
+def create_output(time_str, module, text) -> str:
+    module = module.replace(":", "")
     return f"note over {module}: {text} \\n {time_str}"
 
 
-def create_output_for_2_modules(modules_dict: dict, time_str, src_module, dst_module, text) -> str:
+def create_output_for_2_modules(time_str, src_module, dst_module, text) -> tuple[str, list]:
     src_module = src_module.replace(":", "")
     dst_module = dst_module.replace(":", "")
-    modules_dict[src_module] = modules_dict[src_module] + 1 if modules_dict.get(src_module) else 1
-    modules_dict[dst_module] = modules_dict[dst_module] + 1 if modules_dict.get(dst_module) else 1
 
-    return f"{src_module}->{dst_module}:{text}\\n {time_str}"
+    return f"{src_module}->{dst_module}:{text}\\n {time_str}", [src_module, dst_module]
 
 
 def convert_time_str_to_time(time_str) -> int:
@@ -147,6 +152,47 @@ def convert_time_str_to_time(time_str) -> int:
         return epoc + int(millisecond_str)
 
     return 0
+
+
+def get_participant_modules_from_lines(output_lines: list) -> dict:
+    modules_dict = {}
+    for line in output_lines:
+        for module in line["modules"]:
+            add_to_module_dict(modules_dict, module)
+
+    return modules_dict
+
+
+def get_output_lines_separation(output_lines, do_separate_flows):
+    if not do_separate_flows:
+        yield output_lines
+        return
+
+    prev_date_val_ms = convert_time_str_to_time(output_lines[0]["time_str"])
+    first_line = 0
+    for i, line in enumerate(output_lines):
+        curr_date_val_ms = convert_time_str_to_time(line["time_str"])
+        if curr_date_val_ms - prev_date_val_ms > 50000:
+            yield output_lines[first_line: i]
+            first_line = i + 1
+
+        prev_date_val_ms = curr_date_val_ms
+
+
+def print_output(output_lines, title, do_separate_flows):
+    output_line_generator = get_output_lines_separation(output_lines, do_separate_flows)
+
+    for flow_lines in output_line_generator:
+        print(title)
+        sorted_modules = get_sorted_modules(get_participant_modules_from_lines(flow_lines))
+        for module_tuple in sorted_modules:
+            print(f"participant {module_tuple[0].replace(' ', '')}")
+
+        for line in flow_lines:
+            print(line["output"])
+
+        for module_tuple in sorted_modules:
+            print(f"destroysilent {module_tuple[0].replace(' ', '')}")
 
 
 def main():
@@ -167,12 +213,9 @@ def main():
 
     last_timestamp = ""
     multiline_str = ""
-    modules_dict = {}
-    from datetime import datetime
 
-    prev_date_val_ms = convert_time_str_to_time("")
     for line in file:
-        pre_defined_output = ""
+        pre_defined_output_tuple = None
         time_str = had_date(line)
         if time_str is None:
             if curr_curl_line := is_curl_str(line):
@@ -186,26 +229,22 @@ def main():
                         source, dest = dest, source
 
                     time_str = last_timestamp
-                    pre_defined_output = create_output_for_2_modules(modules_dict, time_str, source, dest, line_fold(multiline_str))
+                    pre_defined_output_tuple = create_output_for_2_modules(time_str, source, dest, line_fold(multiline_str))
                     multiline_str = ""
                 else:
                     continue
 
-        curr_date_val_ms = convert_time_str_to_time(time_str)
-        if curr_date_val_ms - prev_date_val_ms > 50000:
-            output_lines.append("ExternalEvent")
-
         last_timestamp = time_str
-        prev_date_val_ms = curr_date_val_ms
 
         module = get_module(line, modules)
-        pre_defined_output = pre_defined_output or pre_defined_http_line(modules_dict, line)
+        pre_defined_output_tuple = pre_defined_output_tuple or pre_defined_http_line(line)
         found_json_dict = has_json(line)
-        if not found_json_dict and module is None and pre_defined_output is None:
+        if not found_json_dict and module is None and pre_defined_output_tuple is None:
             continue
 
-        if pre_defined_output:
-            output = pre_defined_output
+        output_modules = [module] if pre_defined_output_tuple is None else pre_defined_output_tuple[1]
+        if pre_defined_output_tuple:
+            output = pre_defined_output_tuple[0]
         elif found_json_dict:
             wrapped_json = ""
             for found_json_str, found_json_dict in found_json_dict.items():
@@ -216,27 +255,18 @@ def main():
                     escaped_json = re.escape(found_json_str)
                     module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
                     module = re.split("\ |:", module)[0]
+                    output_modules = [module]
 
-            output = create_output(modules_dict, time_str, module, wrapped_json)
+            output = create_output(time_str, module, wrapped_json)
         else:
-            output = pre_defined_module_changes(modules_dict, line, module, time_str)
+            output = pre_defined_module_changes(line, module, time_str)
 
         if not output:
             continue
 
-        output_lines.append(output)
+        output_lines.append({"time_str": time_str, "output": output, "modules": output_modules})
 
-    print(title)
-    sorted_modules = get_sorted_modules(modules_dict)
-    for module_tuple in sorted_modules:
-        print(f"participant \"{module_tuple[0]}\\n {module_tuple[1]}\" as {module_tuple[0]}")
-
-    for line in output_lines:
-        if line == "ExternalEvent":
-            print(f"note over {sorted_modules[0][0]},{sorted_modules[-1][0]}: line")
-            continue
-        print(line)
-
+    print_output(output_lines, title, args.split)
 
 if __name__ == "__main__":
     main()
