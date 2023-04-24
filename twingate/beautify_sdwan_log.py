@@ -74,9 +74,9 @@ def pre_defined_http_line(line: str) -> tuple[str, list] | None:
     if match := re.search(r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n", line):
         return create_output_for_2_modules(match.groups()[0], "sdwan", match.groups()[2], f"{match.groups()[1]} {match.groups()[3]}")
 
-    if match:= re.search(r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/.*\" (.*) \(.*\)\n", line):
+    if match:= re.search(r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/(.*)\" (.*) \(.*\)\n", line):
         return create_output_for_2_modules(match.groups()[0], match.groups()[1], "sdwan",
-                                           {match.groups()[2]})
+                                           f"{match.groups()[3]} on {match.groups()[2]}")
     return None
 
 
@@ -158,7 +158,7 @@ def get_participant_modules_from_lines(output_lines: list) -> dict:
     modules_dict = {}
     for line in output_lines:
         for module in line["modules"]:
-            add_to_module_dict(modules_dict, module)
+            add_to_module_dict(modules_dict, module.replace(":", ""))
 
     return modules_dict
 
@@ -174,7 +174,7 @@ def get_output_lines_separation(output_lines, do_separate_flows):
         curr_date_val_ms = convert_time_str_to_time(line["time_str"])
         if curr_date_val_ms - prev_date_val_ms > 50000:
             yield output_lines[first_line: i]
-            first_line = i + 1
+            first_line = i
 
         prev_date_val_ms = curr_date_val_ms
 
