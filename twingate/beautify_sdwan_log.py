@@ -13,11 +13,15 @@ import webbrowser
 from datetime import datetime
 import calendar
 
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'python-dateutil'])
+from dateutil.parser import parse as date_parse
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--additional-modules",
-        default="",
+        default="(\[.*?\]) ,",
         help="additional modules to extract from logs",
     )
     parser.add_argument(
@@ -30,21 +34,25 @@ def parse_args():
         default="",
         help="the file which needs to be read (optional param) STDIN can be used",
     )
+    parser.add_argument(
+        "--date-regex",
+        default=r"^(\[.*[0-9]\]) ",
+        help="define the date regex",
+    )
     return parser.parse_args()
 
 
-def get_all_modules_with_json(file) -> set:
+def get_all_modules_with_json(file, date_regex_no_place_holder: str) -> set:
     all_modules = set()
     for line in file:
-        all_modules.add(search_and_replace(line, search="^\[.*[0-9]\] (.*) \{.*\}.*", replace="\1"))
+        all_modules.add(search_and_replace(line, search=f"{date_regex_no_place_holder}(.*) {{.*}}.*", replace="\1"))
 
     return all_modules
 
 
-def get_module(line: str, modules: set) -> str | None:
+def get_module(line: str, modules: set, date_regex_no_place_holder: str) -> str | None:
     for module in modules:
-
-        if module_name := search_and_replace(line, f"^\[.*[0-9]\] {module}.*\n", r"\1"):
+        if module_name := search_and_replace(line, f"{date_regex_no_place_holder}{module}.*\n", r"\1"):
             return module_name
 
     return None
@@ -70,18 +78,18 @@ def has_json(line: str) -> dict | None:
     return found_json
 
 
-def pre_defined_http_line(line: str) -> tuple[str, list] | None:
-    if match := re.search(r"^(\[.*\]) http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n", line):
+def pre_defined_http_line(line: str, date_regex: str) -> tuple[str, list] | None:
+    if match := re.search(f"{date_regex}http\:\:request\:\:send_request\: ([A-Z]*) \"https://(.*)\.com/(.*)\" .*\n", line):
         return create_output_for_2_modules(match.groups()[0], "sdwan", match.groups()[2], f"{match.groups()[1]} {match.groups()[3]}")
 
-    if match:= re.search(r"^(\[.*\]) http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/(.*)\" (.*) \(.*\)\n", line):
+    if match:= re.search(f"{date_regex}http\:\:request\:\:handle_response\: [A-Z]* \"https://(.*)\.com/(.*)\" (.*) \(.*\)\n", line):
         return create_output_for_2_modules(match.groups()[0], match.groups()[1], "sdwan",
                                            f"{match.groups()[3]} on {match.groups()[2]}")
     return None
 
 
-def had_date(line: str) -> str | None:
-    return search_and_replace(line, r"^(\[.*[0-9]\]) .*\n", r"\1")
+def had_date(line: str, date_regex: str) -> str | None:
+    return search_and_replace(line, f"{date_regex}.*\n", r"\1")
 
 
 def find_closing(line, index, opening, closing) -> tuple[str | None, int | None, int | None]:
@@ -101,11 +109,10 @@ def find_closing(line, index, opening, closing) -> tuple[str | None, int | None,
     return None, None, None
 
 
-def pre_defined_module_changes(line, module, time_str) -> str | None:
+def pre_defined_module_changes(line, module, time_str, date_regex_no_place_holder) -> str | None:
     escaped_module = re.escape(module)
-    escaped_time_str = re.escape(time_str)
-    output = search_and_replace(line, f"^{escaped_time_str} {escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
-    output = output or search_and_replace(line, f"^{escaped_time_str} {escaped_module}(.*)\n", r"\1")
+    output = search_and_replace(line, f"{date_regex_no_place_holder}{escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
+    output = output or search_and_replace(line, f"{date_regex_no_place_holder}{escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
     module = re.split("\ |:", module)[0]
     return create_output(time_str, module, output)
@@ -144,14 +151,11 @@ def create_output_for_2_modules(time_str, src_module, dst_module, text) -> tuple
 
 
 def convert_time_str_to_time(time_str) -> int:
-    if match := re.search("\[(.*)\.([0-9]*)\]", time_str):
-        datetime_str = match.groups()[0]
-        millisecond_str = match.groups()[1]
-
-        epoc = calendar.timegm(datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S").timetuple()) * 1000000
-        return epoc + int(millisecond_str)
-
-    return 0
+    time_str = time_str.replace("[", "")
+    time_str = time_str.replace("]", "")
+    time_str = time_str.split(".")
+    epoc = calendar.timegm(date_parse(time_str[0]).timetuple()) * 1000000
+    return epoc + int(time_str[1].split('-')[0])
 
 
 def get_participant_modules_from_lines(output_lines: list) -> dict:
@@ -188,6 +192,7 @@ def print_output(output_lines, title, do_separate_flows):
         for module_tuple in sorted_modules:
             print(f"participant {module_tuple[0].replace(' ', '')}")
 
+        print(f"note over {sorted_modules[0][0].replace(' ', '')}, {sorted_modules[-1][0].replace(' ', '')}: new event")
         for line in flow_lines:
             print(line["output"])
 
@@ -213,10 +218,13 @@ def main():
 
     last_timestamp = ""
     multiline_str = ""
-
+    date_regex = args.date_regex
+    date_regex_no_place_holder = date_regex
+    date_regex_no_place_holder = date_regex_no_place_holder.replace("(", "")
+    date_regex_no_place_holder = date_regex_no_place_holder.replace(")", "")
     for line in file:
         pre_defined_output_tuple = None
-        time_str = had_date(line)
+        time_str = had_date(line, date_regex)
         if time_str is None:
             if curr_curl_line := is_curl_str(line):
                  multiline_str += curr_curl_line
@@ -236,8 +244,8 @@ def main():
 
         last_timestamp = time_str
 
-        module = get_module(line, modules)
-        pre_defined_output_tuple = pre_defined_output_tuple or pre_defined_http_line(line)
+        module = get_module(line, modules, date_regex_no_place_holder)
+        pre_defined_output_tuple = pre_defined_output_tuple or pre_defined_http_line(line, date_regex)
         found_json_dict = has_json(line)
         if not found_json_dict and module is None and pre_defined_output_tuple is None:
             continue
@@ -253,13 +261,13 @@ def main():
                 wrapped_json += line_fold(json_str)
                 if module is None:
                     escaped_json = re.escape(found_json_str)
-                    module = search_and_replace(line, f"^\[.*\] (.*){escaped_json}", r"\1")
+                    module = search_and_replace(line, f"{date_regex_no_place_holder}(.*){escaped_json}", r"\1")
                     module = re.split("\ |:", module)[0]
                     output_modules = [module]
 
             output = create_output(time_str, module, wrapped_json)
         else:
-            output = pre_defined_module_changes(line, module, time_str)
+            output = pre_defined_module_changes(line, module, time_str, date_regex_no_place_holder)
 
         if not output:
             continue
