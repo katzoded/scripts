@@ -115,7 +115,7 @@ def pre_defined_module_changes(line, module, time_str, date_regex_no_place_holde
     output = output or search_and_replace(line, f"{date_regex_no_place_holder}{escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
     module = re.split("\ |:", module)[0]
-    return create_output(time_str, module, output)
+    return create_output(time_str, output)
 
 
 def line_fold(line) -> str:
@@ -138,16 +138,15 @@ def add_to_module_dict(modules_dict: dict, module):
     modules_dict[module] = modules_dict[module] + 1 if modules_dict.get(module) else 1
 
 
-def create_output(time_str, module, text) -> str:
-    module = module.replace(":", "")
-    return f"note over {module}: {text} \\n {time_str}"
+def create_output(time_str, text) -> str:
+    return f"{text} \\n {time_str}"
 
 
 def create_output_for_2_modules(time_str, src_module, dst_module, text) -> tuple[str, list]:
     src_module = src_module.replace(":", "")
     dst_module = dst_module.replace(":", "")
 
-    return f"{src_module}->{dst_module}:{text}\\n {time_str}", [src_module, dst_module]
+    return f"{text}\\n {time_str}", [src_module, dst_module]
 
 
 def convert_time_str_to_time(time_str) -> int:
@@ -190,6 +189,27 @@ def get_output_lines_separation(output_lines, do_separate_flows):
         prev_date_val_ms = curr_date_val_ms
 
 
+def format_output_by_modules(modules) -> str:
+    if len(modules) == 2:
+        return f"{modules[0]}->{modules[1]}:"
+    return f"note over {modules[0]}:"
+
+
+def get_output_similar_module_lines(output_lines):
+    modules = None
+    output = ""
+    first_line = 0
+    for i, line in enumerate(output_lines):
+        if modules != line["modules"]:
+            if modules:
+                yield output
+            modules = line["modules"]
+            output = format_output_by_modules(modules)
+            first_line = i
+
+        output = f"{output} [{i - first_line}]{line['output']}\\n"
+
+
 def print_output(output_lines, title, do_separate_flows):
     output_line_generator = get_output_lines_separation(output_lines, do_separate_flows)
 
@@ -200,8 +220,8 @@ def print_output(output_lines, title, do_separate_flows):
             print(f"participant {module_tuple[0].replace(' ', '')}")
 
         print(f"note over {sorted_modules[0][0].replace(' ', '')}, {sorted_modules[-1][0].replace(' ', '')}: new event")
-        for line in flow_lines:
-            print(line["output"])
+        for output in get_output_similar_module_lines(flow_lines):
+            print(output)
 
         for module_tuple in sorted_modules:
             print(f"destroysilent {module_tuple[0].replace(' ', '')}")
@@ -272,7 +292,7 @@ def main():
                     module = re.split("\ |:", module)[0]
                     output_modules = [module]
 
-            output = create_output(time_str, module, wrapped_json)
+            output = create_output(time_str, wrapped_json)
         else:
             output = pre_defined_module_changes(line, module, time_str, date_regex_no_place_holder)
 
