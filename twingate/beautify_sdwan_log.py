@@ -50,7 +50,7 @@ def get_all_modules_with_json(file, date_regex_no_place_holder: str) -> set:
     return all_modules
 
 
-def get_module(line: str, modules: set, date_regex_no_place_holder: str) -> str | None:
+def get_module(line: str, modules: list, date_regex_no_place_holder: str) -> str | None:
     for module in modules:
         if module_name := search_and_replace(line, f"{date_regex_no_place_holder}{module}.*\n", r"\1"):
             return module_name
@@ -114,7 +114,6 @@ def pre_defined_module_changes(line, module, time_str, date_regex_no_place_holde
     output = search_and_replace(line, f"{date_regex_no_place_holder}{escaped_module}.*state.*from(.*)to(.*)\n", r"State Transition\nfrom\1\nto\2")
     output = output or search_and_replace(line, f"{date_regex_no_place_holder}{escaped_module}(.*)\n", r"\1")
     output = line_fold(output)
-    module = re.split("\ |:", module)[0]
     return create_output(time_str, output)
 
 
@@ -231,11 +230,11 @@ def main():
     output_lines = []
     title =""
     args = parse_args()
-    modules: set = set()
+    modules: list = []
 
     for module in args.additional_modules.split(","):
         if module:
-            modules.add(module)
+            modules.append(module)
 
     if args.file:
         file = open(args.file, 'r+')
