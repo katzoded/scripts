@@ -154,8 +154,15 @@ def convert_time_str_to_time(time_str) -> int:
     time_str = time_str.replace("[", "")
     time_str = time_str.replace("]", "")
     time_str = time_str.split(".")
-    epoc = calendar.timegm(date_parse(time_str[0]).timetuple()) * 1000000
-    return epoc + int(time_str[1].split('-')[0])
+    datetime_str = time_str[0]
+    millisec = time_str[1].split('-')[0]
+
+    if len(millisec) == 3:
+        millisec = f"{millisec}000"
+
+    epoc = calendar.timegm(date_parse(datetime_str).timetuple()) * 1000000
+
+    return epoc + int(millisec)
 
 
 def get_participant_modules_from_lines(output_lines: list) -> dict:
