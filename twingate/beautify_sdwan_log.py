@@ -208,6 +208,8 @@ def get_output_similar_module_lines(output_lines):
 
         output = f"{output} [{i - first_line}]{line['output']}\\n"
 
+    yield output
+
 
 def print_output(output_lines, title, do_separate_flows):
     output_line_generator = get_output_lines_separation(output_lines, do_separate_flows)
