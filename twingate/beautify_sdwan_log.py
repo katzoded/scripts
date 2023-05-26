@@ -181,7 +181,7 @@ def get_output_lines_separation(output_lines, do_separate_flows):
     first_line = 0
     for i, line in enumerate(output_lines):
         curr_date_val_ms = convert_time_str_to_time(line["time_str"])
-        if curr_date_val_ms - prev_date_val_ms > 50000:
+        if curr_date_val_ms - prev_date_val_ms > 10000:
             yield output_lines[first_line: i]
             first_line = i
 
